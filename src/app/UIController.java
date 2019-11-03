@@ -2,11 +2,12 @@ package app;
 
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+
+import java.io.File;
+import java.util.Optional;
 
 public class UIController
 {
@@ -16,19 +17,28 @@ public class UIController
     @FXML
     private void initialize()
     {
-        initGrid(9);
+        Optional<File> opFile = ReadLSQFile.fileSelection();
+        //###DEBUG CODE FOR QUICK FILE SELECTION###
+        //Optional<File> opFile = Optional.of(new File("samplefiles/lsq10.lsq"));
+        //###END DEBUG CODE###
+        if(opFile.isPresent())
+        {
+            LSQ lsq = ReadLSQFile.createLSQFromFile(opFile.get());
+            initGrid(lsq);
+        }
     }
 
     //initializes grid for n x n square
-    private void initGrid(int n)
+    private void initGrid(LSQ lsq)
     {
+        int n = lsq.getDimension();
         //remove any current column and row constraints
         while(grid.getColumnConstraints().size() > 0)
             grid.getColumnConstraints().remove(0);
         while(grid.getRowConstraints().size() > 0)
             grid.getRowConstraints().remove(0);
 
-        //add new constraints
+        //add new constraints to grid
         for(int i = 0; i < n; i++)
         {
             ColumnConstraints cc = new ColumnConstraints();
@@ -48,21 +58,22 @@ public class UIController
             grid.getRowConstraints().add(rc);
         }
 
-        //just fill it with alphabet characters in order for now
-        char c;
         for(int i = 0; i < n; i++)
         {
-            c = 65;
             for(int j = 0; j < n; j++)
             {
-                //pane added along with symbol; provides background with border for cells based on css style class
+                //pane added along with symbol
+                //with style class, provides background with border as inset to show grid lines
                 Pane cell = new Pane();
                 cell.getStyleClass().add("cell");
                 grid.add(cell, i, j, 1, 1);
-                Label symbol = new Label(Character.toString(c));
-                symbol.getStyleClass().add("symbol");
-                c++;
-                grid.add(symbol, i, j, 1, 1);
+                Symbol symbol = lsq.getSymbol(i, j);
+                Label lblSymbol = new Label(Character.toString(symbol.getCharacter()));
+                if(!symbol.isLocked())
+                    lblSymbol.getStyleClass().add("symbol");
+                else
+                    lblSymbol.getStyleClass().add("symbol-locked");
+                grid.add(lblSymbol, i, j, 1, 1);
             }
         }
     }

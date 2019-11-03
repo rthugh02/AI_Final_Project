@@ -1,15 +1,37 @@
 .root
 {
+    -fx-background-color: #38393d;
 }
-.grid
+
+AnchorPane
 {
-    -fx-background-color: black, white;
+    -fx-background-color: #38393d;
+}
+
+GridPane
+{
+    -fx-background-color: black, #303a69;
     -fx-background-insets: 0, 2;
     -fx-padding: 1;
 }
+
+MenuBar, MenuItem
+{
+    -fx-background-color: darkgray;
+}
+
+SplitPane
+{
+    -fx-background-color: #303a69;
+}
+
+.split-pane-divider
+{
+    -fx-background-color: gray;
+}
 .cell
 {
-    -fx-background-color: black, white;
+    -fx-background-color: black, #303a69;
     -fx-background-insets: 0, 2;
 }
 
@@ -18,7 +40,7 @@
     -fx-font-size: 16;
     -fx-font-family: "Arial";
     -fx-font-weight: bold;
-    -fx-text-fill: red;
+    -fx-text-fill: white;
 }
 
 .symbol-locked
@@ -26,5 +48,5 @@
     -fx-font-size: 16;
     -fx-font-family: "Arial";
     -fx-font-weight: bold;
-    -fx-text-fill: black;
+    -fx-text-fill: #a81919;
 }
