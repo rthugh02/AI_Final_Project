@@ -14,7 +14,7 @@ public class ReadLSQFile
     //..optional if one was selected
     public static Optional<File> fileSelection()
     {
-        JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir"), FileSystemView.getFileSystemView());
+        JFileChooser fileChooser = new JFileChooser("samplefiles", FileSystemView.getFileSystemView());
         fileChooser.setFileFilter(new FileNameExtensionFilter("LSQ Files", "lsq"));
 
         int ok = fileChooser.showOpenDialog(null);

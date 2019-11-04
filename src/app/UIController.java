@@ -17,6 +17,11 @@ public class UIController
     @FXML
     private void initialize()
     {
+        GASettings.setDefaults();
+    }
+
+    public void onClickOpen()
+    {
         Optional<File> opFile = ReadLSQFile.fileSelection();
         //###DEBUG CODE FOR QUICK FILE SELECTION###
         //Optional<File> opFile = Optional.of(new File("samplefiles/lsq10.lsq"));
@@ -24,12 +29,12 @@ public class UIController
         if(opFile.isPresent())
         {
             LSQ lsq = ReadLSQFile.createLSQFromFile(opFile.get());
-            initGrid(lsq);
+            drawGrid(lsq);
         }
     }
 
     //initializes grid for n x n square
-    private void initGrid(LSQ lsq)
+    private void drawGrid(LSQ lsq)
     {
         int n = lsq.getDimension();
         //remove any current column and row constraints
