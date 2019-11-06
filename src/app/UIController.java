@@ -1,10 +1,17 @@
 package app;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.*;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 import java.io.File;
 import java.util.Optional;
@@ -15,9 +22,21 @@ public class UIController
     private GridPane grid;
 
     @FXML
+    private TextField tfPopSize;
+    @FXML
+    private TextField tfMutChance;
+    @FXML
+    private TextField tfElitism;
+    @FXML
+    private TextField tfTourney;
+    @FXML
+    private CheckBox cbWOC;
+
+    @FXML
     private void initialize()
     {
         GASettings.setDefaults();
+        initListeners();
     }
 
     public void onClickOpen()
@@ -83,5 +102,89 @@ public class UIController
         }
     }
 
+    //set up and return a text formatter class that will restrict a text field entry to an integer between two bounds
+    private TextFormatter<Integer> getIntTextFormatter(int lowerBound, int upperBound, int defaultValue)
+    {
+        return new TextFormatter<>(new IntegerStringConverter(),
+                defaultValue, change ->
+                {
+                    try
+                    {
+                        //only allow change if it can be parsed as int and is within bounds
+                        int intValue = Integer.parseInt(change.getControlNewText());
+                        if(intValue >= lowerBound && intValue <= upperBound)
+                            return change;
+                        else
+                            return null;
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        return null;
+                    }
+                } );
+    }
 
+    //set up and return a text formatter class that will restrict a text field entry to a double between two bounds
+    private TextFormatter<Double> getDblTextFormatter(double lowerBound, double upperBound, double defaultValue)
+    {
+        return new TextFormatter<>(new DoubleStringConverter(), defaultValue,
+                change ->
+                {
+                    try
+                    {
+                        //only allow change if it can be parsed as double and is within bounds
+                        double dblValue = Double.parseDouble(change.getControlNewText());
+                        if(dblValue >= lowerBound && dblValue <= upperBound)
+                            return change;
+                        else
+                            return null;
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        return null;
+                    }
+                } );
+    }
+
+    //set up text formatters and listeners for editable ui objects
+    private void initListeners()
+    {
+        TextFormatter<Integer> popTF = getIntTextFormatter(0, 1000, GASettings.getPopSize());
+        popTF.valueProperty().addListener((obs, oldValue, newValue) ->
+        {
+            GASettings.setPopSize(newValue);
+            System.out.println("Pop Size changed to: " + GASettings.getPopSize());
+        });
+        tfPopSize.setTextFormatter(popTF);
+
+        TextFormatter<Double> mutTF = getDblTextFormatter(0.0, 1.0,
+                GASettings.getMutationChance());
+        mutTF.valueProperty().addListener((obs, oldValue, newValue) ->
+        {
+            GASettings.setMutationChance(newValue);
+            System.out.println("Mutation Chance changed to: " + GASettings.getMutationChance());
+        });
+        tfMutChance.setTextFormatter(mutTF);
+        TextFormatter<Integer> elitismTF = getIntTextFormatter(0, 5, GASettings.getElitism());
+        elitismTF.valueProperty().addListener((obs, oldValue, newValue) ->
+        {
+            GASettings.setElitism(newValue);
+            System.out.println("Elitism changed to: " + GASettings.getElitism());
+        });
+        tfElitism.setTextFormatter(elitismTF);
+        TextFormatter<Integer> tourneyTF = getIntTextFormatter(0, 10,
+                GASettings.getTourneySelectionNumber());
+        tourneyTF.valueProperty().addListener((obs, oldValue, newValue) ->
+        {
+            GASettings.setTourneySelectionNumber(newValue);
+            System.out.println("Tourney Selection Number changed to: " + GASettings.getTourneySelectionNumber());
+        });
+        tfTourney.setTextFormatter(tourneyTF);
+
+        cbWOC.selectedProperty().addListener((obs, oldValue, newValue) ->
+        {
+            GASettings.setWisdomOfCrowds(newValue);
+            System.out.println("Use Wisdom of Crowds changed to: " + GASettings.isWisdomOfCrowds());
+        });
+    }
 }

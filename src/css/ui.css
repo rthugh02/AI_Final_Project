@@ -15,12 +15,46 @@ GridPane
     -fx-padding: 1;
 }
 
-MenuBar, MenuItem
+.title-box
 {
-    -fx-background-color: darkgray;
+    -fx-background-color: gray,  #38393d;
+    -fx-background-insets: 0, 0 0 2 0;
+    -fx-padding: 2 2 2 5
 }
 
-SplitPane
+.title
+{
+    -fx-text-fill: white;
+    -fx-font-family: System Regular;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-padding: 5 5 5 0;
+}
+
+.text-field-label
+{
+    -fx-text-fill: white;
+    -fx-font-family: System Regular;
+    -fx-font-size: 14;
+    -fx-padding: 5 5 1 5;
+}
+
+.text-field-box
+{
+    -fx-padding: 0 0 10 15;
+}
+
+.check-box
+{
+    -fx-padding: 10 0 0 5;
+}
+
+.menu-bar
+{
+    -fx-background-color: black, darkgray;
+}
+
+.split-pane
 {
     -fx-background-color: #303a69;
 }

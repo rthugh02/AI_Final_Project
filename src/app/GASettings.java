@@ -6,13 +6,15 @@ public class GASettings
     private static int popSize;
     private static double mutationChance;
     private static boolean wisdomOfCrowds;
+    private static int elitism;
     private static int tourneySelectionNumber;
 
     public static void setDefaults()
     {
-        popSize = 100;
+        popSize = 200;
         mutationChance = 0.002;
         wisdomOfCrowds = true;
+        elitism = 0;
         tourneySelectionNumber = 3;
         Statistics.reset();
     }
@@ -48,6 +50,16 @@ public class GASettings
     {
         GASettings.wisdomOfCrowds = wisdomOfCrowds;
         Statistics.reset();
+    }
+
+    public static int getElitism()
+    {
+        return elitism;
+    }
+
+    public static void setElitism(int elitism)
+    {
+        GASettings.elitism = elitism;
     }
 
     public static int getTourneySelectionNumber()

@@ -41,7 +41,6 @@ public class ReadLSQFile
             System.exit(0);
         }
 
-
         char startChar, c;
         int dimension, col, row;
 
@@ -97,7 +96,6 @@ public class ReadLSQFile
         {
             System.out.println(e.getMessage());
             throw new RuntimeException("Error Reading File");
-
         }
 
         LSQ newLSQ = new LSQ(dimension, lsqTable, startChar);
