@@ -44,6 +44,11 @@
                            </children>
                         </HBox>
                         <CheckBox fx:id="cbWOC" mnemonicParsing="false" styleClass="text-field-label" text="Use Wisdom of Crowds" />
+                        <HBox prefHeight="10.0" prefWidth="222.0" styleClass="button-box">
+                           <children>
+                              <Button mnemonicParsing="false" onMouseClicked="#onClickRun" prefHeight="25.0" prefWidth="101.0" text="Run" />
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
                </children></AnchorPane>

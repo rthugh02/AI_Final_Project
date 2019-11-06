@@ -66,7 +66,7 @@ public class LSQ
             c++;
         }
 
-        //find initial locked characters and reduce counts
+        //find existing symbols and reduce counts
         for(int i = 0; i < dimension; i++)
         {
             for(int j = 0; j < dimension; j++)
@@ -103,5 +103,21 @@ public class LSQ
                 }
             }
         }
+    }
+
+    public void randomize()
+    {
+        //clear the table of non-locked symbols
+        for(int i = 0; i < dimension; i++)
+        {
+            for(int j = 0; j < dimension; j++)
+            {
+                if(!lsqTable[i][j].isLocked())
+                    lsqTable[i][j] = null;
+            }
+        }
+
+        //call init again to get a randomized table
+        init();
     }
 }

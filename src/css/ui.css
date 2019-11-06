@@ -63,6 +63,12 @@ GridPane
 {
     -fx-background-color: gray;
 }
+
+.button-box
+{
+    -fx-padding: 30 5 5 5;
+}
+
 .cell
 {
     -fx-background-color: black, #303a69;

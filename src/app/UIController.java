@@ -1,7 +1,5 @@
 package app;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
@@ -20,7 +18,6 @@ public class UIController
 {
     @FXML
     private GridPane grid;
-
     @FXML
     private TextField tfPopSize;
     @FXML
@@ -31,6 +28,8 @@ public class UIController
     private TextField tfTourney;
     @FXML
     private CheckBox cbWOC;
+
+    private LSQ lsq;
 
     @FXML
     private void initialize()
@@ -47,9 +46,18 @@ public class UIController
         //###END DEBUG CODE###
         if(opFile.isPresent())
         {
-            LSQ lsq = ReadLSQFile.createLSQFromFile(opFile.get());
+            lsq = ReadLSQFile.createLSQFromFile(opFile.get());
             drawGrid(lsq);
         }
+    }
+
+    public void onClickRun()
+    {
+        if(lsq != null)
+         {
+            lsq.randomize();
+            drawGrid(lsq);
+         }
     }
 
     //initializes grid for n x n square
