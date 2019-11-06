@@ -152,20 +152,20 @@ public class LSQ
         //counting repitions in each column, and determining column with lowest repitions
         for(int i = 0; i < dimension; i++) 
         {
-            HashMap<Symbol, Integer> repititionCounters = new HashMap<Symbol, Integer>(dimension);
+            HashMap<Character, Integer> repititionCounters = new HashMap<Character, Integer>(dimension);
             for(int j = 0; j < dimension; j++)
-                repititionCounters.put(lsqTable[i][j], 1);
+                repititionCounters.put(lsqTable[i][j].getCharacter(), 1);
             int localColumnRepitions = 0;
             int localColumnStatics = 0;
             for(int j = 0; j < dimension; j++)
             {
-                if(repititionCounters.get(lsqTable[i][j]) < 1)
+                if(repititionCounters.get(lsqTable[i][j].getCharacter()) < 1)
                 {
                     repititions++;
                     localColumnRepitions++;
                 }
                 else
-                   repititionCounters.put(lsqTable[i][j], 0);
+                   repititionCounters.put(lsqTable[i][j].getCharacter(), 0);
                 if(lsqTable[i][j].isLocked())
                     localColumnStatics++; 
             }
@@ -185,20 +185,20 @@ public class LSQ
         //doing the same, but now for the rows
         for(int i = 0; i < dimension; i++) 
         {
-            HashMap<Symbol, Integer> repititionCounters = new HashMap<Symbol, Integer>(dimension);
+            HashMap<Character, Integer> repititionCounters = new HashMap<Character, Integer>(dimension);
             for(int j = 0; j < dimension; j++)
-                repititionCounters.put(lsqTable[j][i], 1);
+                repititionCounters.put(lsqTable[j][i].getCharacter(), 1);
             int localRowRepitions = 0;
             int localRowStatics = 0;
             for(int j = 0; j < dimension; j++)
             {
-                if(repititionCounters.get(lsqTable[j][i]) < 1)
+                if(repititionCounters.get(lsqTable[j][i].getCharacter()) < 1)
                 {
                     repititions++;
                     localRowRepitions++;
                 }
                 else
-                   repititionCounters.put(lsqTable[j][i], 0);
+                   repititionCounters.put(lsqTable[j][i].getCharacter(), 0);
                 if(lsqTable[j][i].isLocked())
                     localRowStatics++; 
             }
@@ -216,6 +216,6 @@ public class LSQ
         }
 
         if(repititions != 0)
-            this.fitness = 1/repititions;
+            this.fitness = (double)1/repititions;
     }
 }
