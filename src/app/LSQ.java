@@ -9,6 +9,7 @@ public class LSQ
     private final int dimension;
     private Symbol[][] lsqTable;
     private final char startChar;
+    private Boolean isCompleteSolution = false;
 
     //-1 indicates lowest row has not been determined, other values indicate index
     private int lowestRow = -1;
@@ -69,6 +70,11 @@ public class LSQ
     public double getFitness() 
     {
         return fitness;
+    }
+
+    public Boolean isCompleteSolution()
+    {
+        return isCompleteSolution;
     }
 
     //initialize the empty cells of a table with random characters
@@ -217,5 +223,7 @@ public class LSQ
 
         if(repititions != 0)
             this.fitness = (double)1/repititions;
+        else
+            this.isCompleteSolution = true;
     }
 }
