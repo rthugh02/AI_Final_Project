@@ -1,8 +1,6 @@
 package app;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
 
 
 
@@ -20,6 +18,11 @@ public class Population
     public int size()
     {
         return populationMembers.size();
+    }
+
+    public ArrayList<LSQ> getPopulationMembers() 
+    {
+        return populationMembers;
     }
 
     //Take the LSQ, generate random solutions for the given population
