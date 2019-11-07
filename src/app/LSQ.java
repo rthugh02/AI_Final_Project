@@ -1,8 +1,7 @@
 package app;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class LSQ
 {
@@ -28,8 +27,20 @@ public class LSQ
     public LSQ(LSQ lsq)
     {
         this.dimension = lsq.getDimension();
-        this.lsqTable = lsq.getLsqTable().clone();
         this.startChar = lsq.getStartChar();
+        this.lowestColumn = lsq.getLowestColumn();
+        this.lowestRow = lsq.getLowestRow();
+        this.fitness = lsq.getFitness();
+
+        //copy array with newly instantiated Symbols
+        lsqTable = new Symbol[dimension][dimension];
+        for(int i = 0; i < dimension; i++)
+        {
+            for(int j = 0; j < dimension; j++)
+            {
+                this.lsqTable[i][j] = new Symbol(lsq.getSymbol(i, j));
+            }
+        }
     }
 
     public int getDimension()
@@ -54,8 +65,10 @@ public class LSQ
 
     public Symbol getSymbol(int column, int row)
     {
-        return lsqTable[column][row];
+        return new Symbol(lsqTable[column][row]);
     }
+
+    public void setSymbol(Symbol symbol, int column, int row) { this.lsqTable[column][row] = symbol;}
 
     public int getLowestRow() 
     {
@@ -84,7 +97,6 @@ public class LSQ
         ArrayList<Character> charPool = new ArrayList<>();
         //number of times character can be placed
         HashMap<Character, Integer> charCount = new HashMap<>();
-        Random random = new Random();
         char c = startChar;
         for(int x = 0; x < dimension; x++)
         {
@@ -106,6 +118,7 @@ public class LSQ
             }
         }
 
+        Random rand = new Random();
         //iterate through columns and rows of table and add random symbols
         for(int i = 0; i < dimension; i++)
         {
@@ -115,7 +128,7 @@ public class LSQ
                 if(lsqTable[i][j] == null)
                 {
                     //select random index to pull from pool
-                    poolIndex = random.nextInt(charPool.size());
+                    poolIndex = rand.nextInt(charPool.size());
                     c = charPool.get(poolIndex);
                     lsqTable[i][j] = new Symbol(c, false);
 
@@ -130,6 +143,7 @@ public class LSQ
                 }
             }
         }
+        calcFitness();
     }
 
     public void randomize()
@@ -146,6 +160,7 @@ public class LSQ
 
         //call init again to get a randomized table
         init();
+        calcFitness();
     }
     public void calcFitness() 
     {
@@ -225,5 +240,26 @@ public class LSQ
             this.fitness = (double)1/repititions;
         else
             this.isCompleteSolution = true;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder str = new StringBuilder("\nDimension: " + dimension
+                + "\nStart Char: " + startChar
+                + "\nLowest Column: " + lowestColumn
+                + "\nLowest Row: " + lowestRow
+                + "\nFitness: " + fitness);
+
+        for(int j = 0; j < dimension; j++)
+        {
+            str.append("\n");
+            for(int i = 0; i < dimension; i++)
+            {
+                str.append(lsqTable[i][j].getCharacter());
+                str.append("  ");
+            }
+        }
+        return str.toString();
     }
 }

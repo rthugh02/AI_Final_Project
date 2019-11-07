@@ -5,10 +5,10 @@ public class Symbol
     private Character character;
     private boolean isLocked;
 
-    public Symbol(Character character)
+    public Symbol(Symbol symbol)
     {
-        this.character = character;
-        this.isLocked = false;
+        this.character = symbol.getCharacter();
+        this.isLocked = symbol.isLocked;
     }
 
     public Symbol(Character character, boolean isLocked)

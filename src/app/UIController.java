@@ -59,6 +59,7 @@ public class UIController
             LSQ bestSolution = GA.calcGeneticSolution(population);
             lsq.randomize();
             drawGrid(lsq);
+            System.out.println(lsq.toString());
          }
     }
 
