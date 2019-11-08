@@ -1,11 +1,12 @@
 package app;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GA
 {
-    
-    public static LSQ calcGeneticSolution(Population population) 
+    //Best solution will be added to Statistics.SolutionProgression for each generation
+    public static void calcGeneticSolution(Population population) 
     {
         //TODO implement Genetic Algorithm based on population
         
@@ -21,15 +22,12 @@ public class GA
                 - integrate children into population
                 - kill off weakest solutions
             }
-        */
-        
-
-        return null;     
+        */  
     }
 
     //crossover that passes on each parent's best(least conflicts) row and column to separate children
     //..and fills the remaining cells with the opposite parent's corresponding cells
-    public static ArrayList<LSQ> crossover(LSQ parent1, LSQ parent2)
+    private ArrayList<LSQ> crossover(LSQ parent1, LSQ parent2)
     {
         ArrayList<LSQ> children = new ArrayList<>();
         //since remaining cells are filled from opposite parent, just start with clone of opposite parent
@@ -68,5 +66,24 @@ public class GA
         children.add(child1);
         children.add(child2);
         return children;
+    }
+
+    private LSQ selectByTournament(Population population, int selectionAmount) 
+    {
+        Random rand = new Random();
+        int randomIndex;
+        
+        //copy for full removal
+        Population copy = new Population(population);
+        Population tournament = new Population();
+
+        for(int i = 0; i < selectionAmount; i++) 
+        {
+            randomIndex = rand.nextInt(copy.size());
+            tournament.addMember(copy.getMember(randomIndex));
+            copy.removeMember(randomIndex);
+        }
+
+        return tournament.getPopulationMembersSorted().get(0);
     }
 }

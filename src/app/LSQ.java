@@ -3,7 +3,7 @@ package app;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class LSQ
+public class LSQ implements Comparable<LSQ>
 {
     private final int dimension;
     private Symbol[][] lsqTable;
@@ -262,4 +262,11 @@ public class LSQ
         }
         return str.toString();
     }
+
+    @Override
+    public int compareTo(LSQ o) {
+        return Double.compare(o.getFitness(), this.fitness);
+    }
+
+
 }

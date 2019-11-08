@@ -134,4 +134,10 @@ public class Statistics
     {
         Statistics.solutionProgression = solutionProgression;
     }
+
+    public static void addSolutionToProgression(LSQ solutionEntry) 
+    {
+        if(Statistics.solutionProgression != null)
+            solutionProgression.add(solutionEntry);
+    }
 }

@@ -56,7 +56,7 @@ public class UIController
         if(lsq != null)
          {
             Population population = new Population(lsq, GASettings.getPopSize());
-            LSQ bestSolution = GA.calcGeneticSolution(population);
+            GA.calcGeneticSolution(population);
             lsq.randomize();
             drawGrid(lsq);
             System.out.println(lsq.toString());
