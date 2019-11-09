@@ -92,4 +92,40 @@ public class GA
 
         return tournament.getPopulationMembersSorted().get(0);
     }
+      
+    
+    private ArrayList<LSQ> mutation(LSQ original)
+    {
+    	LSQ mutated = new LSQ(original);
+    	int max = LSQ.getDimension()-1;		//uses the dimension, minus one, to get the range for the random array slot
+    	boolean symb1clear = FALSE;		//booleans to make sure that both symbols are not locked
+    	boolean symb2clear = FALSE;
+    	
+    	while(symb1clear == FALSE)		//randomly picks symbol until it isn't locked
+    	{
+    		int symb1col = (Math.random() * ((max - 0) + 1));
+    		int symb1row = (Math.random() * ((max - 0) + 1));
+    		if(!original.getSymbol(symb1col, symb1row).isLocked())
+    		{
+    			symb1clear = TRUE;
+    		}
+    	}
+    	while(symb2clear == FALSE)
+    	{
+    		int symb2col = (Math.random() * ((max - 0) + 1));
+    		int symb2row = (Math.random() * ((max - 0) + 1));
+    		if(!original.getSymbol(symb2col, symb2row).isLocked())
+    		{
+    			symb2clear = TRUE
+    		}
+    	}
+    		
+    		//first replaces the first symbol with the second from the parent
+    		mutated.setSymbol(new Symbol(original.getSymbol(symb2col, symb2row)), symb1col, symb1row);
+    		
+    		//next replaces the second symbol with the first symbol
+    		mutated.setSymbol(new Symbol(original.getSymbol(symb1col, symb2row)), symb2col, symb2row);
+   
+   		return mutated;
+    }
 }
