@@ -97,14 +97,14 @@ public class GA
     private ArrayList<LSQ> mutation(LSQ original)
     {
     	LSQ mutated = new LSQ(original);
-    	int max = LSQ.getDimension()-1;		//uses the dimension, minus one, to get the range for the random array slot
+    	int max = LSQ.getDimension();		//uses the dimension, minus one, to get the range for the random array slot
     	boolean symb1clear = FALSE;		//booleans to make sure that both symbols are not locked
     	boolean symb2clear = FALSE;
     	
     	while(symb1clear == FALSE)		//randomly picks symbol until it isn't locked
     	{
-    		int symb1col = (Math.random() * ((max - 0) + 1));
-    		int symb1row = (Math.random() * ((max - 0) + 1));
+    		int symb1col = rand.nextInt(max);
+    		int symb1row = rand.nextInt(max);
     		if(!original.getSymbol(symb1col, symb1row).isLocked())
     		{
     			symb1clear = TRUE;
@@ -112,8 +112,8 @@ public class GA
     	}
     	while(symb2clear == FALSE)
     	{
-    		int symb2col = (Math.random() * ((max - 0) + 1));
-    		int symb2row = (Math.random() * ((max - 0) + 1));
+    		int symb2col = rand.nextInt(max);
+    		int symb2row = rand.nextInt(max);
     		if(!original.getSymbol(symb2col, symb2row).isLocked())
     		{
     			symb2clear = TRUE
