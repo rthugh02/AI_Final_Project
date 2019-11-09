@@ -1,4 +1,4 @@
-package app;
+package app.Data;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;

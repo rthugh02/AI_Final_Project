@@ -1,7 +1,6 @@
-package app;
+package app.Data;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class LSQ implements Comparable<LSQ>
 {

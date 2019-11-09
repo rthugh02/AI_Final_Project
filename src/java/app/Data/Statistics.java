@@ -1,4 +1,6 @@
-package app;
+package app.Data;
+
+import javafx.scene.chart.XYChart;
 
 import java.util.ArrayList;
 
@@ -15,10 +17,14 @@ public class Statistics
     private static double minFitness;
     private static double maxFitness;
     private static double avgFitness;
-    private LSQ bestSolution;
+    private static LSQ bestSolution;
 
     //stores best solution from each generation; used to visualize progression on UI
     private static ArrayList<LSQ> solutionProgression;
+
+    //series data stored here for comparison on graph
+    private static XYChart.Series<Integer, Double> seriesA;
+    private static XYChart.Series<Integer, Double> seriesB;
 
     //sets default values for all statistics; should be called on startup or when GA settings change
     public static void reset()
@@ -115,14 +121,14 @@ public class Statistics
         Statistics.avgFitness = avgFitness;
     }
 
-    public LSQ getBestSolution()
+    public static LSQ getBestSolution()
     {
         return bestSolution;
     }
 
-    public void setBestSolution(LSQ bestSolution)
+    public static void setBestSolution(LSQ bestSolution)
     {
-        this.bestSolution = bestSolution;
+        Statistics.bestSolution = bestSolution;
     }
 
     public static ArrayList<LSQ> getSolutionProgression()
@@ -132,12 +138,48 @@ public class Statistics
 
     public static void setSolutionProgression(ArrayList<LSQ> solutionProgression)
     {
-        Statistics.solutionProgression = solutionProgression;
+        Statistics.solutionProgression = new ArrayList<>(solutionProgression);
     }
 
     public static void addSolutionToProgression(LSQ solutionEntry) 
     {
         if(Statistics.solutionProgression != null)
             solutionProgression.add(solutionEntry);
+    }
+
+    public static XYChart.Series<Integer, Double> getSeriesA()
+    {
+        return seriesA;
+    }
+
+    public static void setSeriesA(XYChart.Series<Integer, Double> series)
+    {
+        Statistics.seriesA = new XYChart.Series<>();
+        Statistics.seriesA.setName(series.getName());
+        for(XYChart.Data<Integer, Double> data: series.getData())
+        {
+            XYChart.Data<Integer, Double> d = new XYChart.Data<>();
+            d.setXValue(data.getXValue());
+            d.setYValue(data.getYValue());
+            Statistics.seriesA.getData().add(d);
+        }
+    }
+
+    public static XYChart.Series<Integer, Double> getSeriesB()
+    {
+        return seriesB;
+    }
+
+    public static void setSeriesB(XYChart.Series<Integer, Double> series)
+    {
+        Statistics.seriesB = new XYChart.Series<>();
+        Statistics.seriesB.setName(series.getName());
+        for(XYChart.Data<Integer, Double> data: series.getData())
+        {
+            XYChart.Data<Integer, Double> d = new XYChart.Data<>();
+            d.setXValue(data.getXValue());
+            d.setYValue(data.getYValue());
+            Statistics.seriesB.getData().add(d);
+        }
     }
 }

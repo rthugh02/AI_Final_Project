@@ -1,4 +1,8 @@
-package app;
+package app.Algorithm;
+
+import app.Data.LSQ;
+import app.Data.Population;
+import app.Data.Symbol;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -6,7 +10,7 @@ import java.util.Random;
 public class GA
 {
     //Best solution will be added to Statistics.SolutionProgression for each generation
-    public static void calcGeneticSolution(Population population) 
+    public static void calcGeneticSolution(Population population)
     {
         //TODO implement Genetic Algorithm based on population
         

@@ -1,4 +1,4 @@
-package app;
+package app.Data;
 
 public class Symbol
 {

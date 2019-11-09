@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.UIController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.UI.UIController">
    <children>
       <SplitPane dividerPositions="0.22015655577299412" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0">
          <items>
@@ -43,10 +43,16 @@
                               <TextField fx:id="tfTourney" />
                            </children>
                         </HBox>
-                        <CheckBox fx:id="cbWOC" mnemonicParsing="false" styleClass="text-field-label" text="Use Wisdom of Crowds" />
+                        <CheckBox fx:id="cbWOC" mnemonicParsing="false" selected="true" styleClass="text-field-label" text="Use Wisdom of Crowds" />
                         <HBox prefHeight="10.0" prefWidth="222.0" styleClass="button-box">
                            <children>
                               <Button mnemonicParsing="false" onMouseClicked="#onClickRun" prefHeight="25.0" prefWidth="101.0" text="Run" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="32.0" prefWidth="222.0">
+                           <children>
+                              <Label styleClass="text-field-label" text="Iterations: " />
+                              <Label fx:id="lblIterations" styleClass="text-field-label" text="0" />
                            </children>
                         </HBox>
                      </children>
@@ -82,7 +88,27 @@
               <MenuItem mnemonicParsing="false" onAction="#onClickOpen" text="Open" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Edit" />
+          <Menu mnemonicParsing="false" text="Edit">
+               <items>
+                  <Menu mnemonicParsing="false" text="Number of Trials">
+                     <items>
+                        <RadioMenuItem fx:id="rmiTrial1" mnemonicParsing="false" selected="true" text="1">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="tgTrials" />
+                           </toggleGroup>
+                        </RadioMenuItem>
+                        <RadioMenuItem fx:id="rmiTrial5" mnemonicParsing="false" text="5" toggleGroup="$tgTrials" />
+                        <RadioMenuItem fx:id="rmiTrial10" mnemonicParsing="false" text="10" toggleGroup="$tgTrials" />
+                        <RadioMenuItem fx:id="rmiTrial25" mnemonicParsing="false" text="25" toggleGroup="$tgTrials" />
+                        <RadioMenuItem fx:id="rmiTrial50" mnemonicParsing="false" text="50" toggleGroup="$tgTrials" />
+                     </items>
+                  </Menu>
+               </items></Menu>
+            <Menu mnemonicParsing="false" text="Graph">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#onClickGraph" text="Graph Current Run Results" />
+              </items>
+            </Menu>
         </menus>
       </MenuBar>
    </children>

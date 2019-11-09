@@ -1,4 +1,6 @@
-package app;
+package app.Algorithm;
+
+import app.Data.Statistics;
 
 //helper class for managing genetic algorithm settings
 public class GASettings
@@ -8,6 +10,7 @@ public class GASettings
     private static boolean wisdomOfCrowds;
     private static int elitism;
     private static int tourneySelectionNumber;
+    private static int numTrials;
 
     public static void setDefaults()
     {
@@ -16,6 +19,7 @@ public class GASettings
         wisdomOfCrowds = true;
         elitism = 0;
         tourneySelectionNumber = 3;
+        numTrials = 1;
         Statistics.reset();
     }
 
@@ -60,6 +64,7 @@ public class GASettings
     public static void setElitism(int elitism)
     {
         GASettings.elitism = elitism;
+        Statistics.reset();
     }
 
     public static int getTourneySelectionNumber()
@@ -71,5 +76,15 @@ public class GASettings
     {
         GASettings.tourneySelectionNumber = tourneySelectionNumber;
         Statistics.reset();
+    }
+
+    public static int getNumTrials()
+    {
+        return numTrials;
+    }
+
+    public static void setNumTrials(int numTrials)
+    {
+        GASettings.numTrials = numTrials;
     }
 }

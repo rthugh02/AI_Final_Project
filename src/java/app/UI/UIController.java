@@ -1,16 +1,19 @@
-package app;
+package app.UI;
 
+import app.Algorithm.GA;
+import app.Algorithm.GASettings;
+import app.Data.*;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
-
 import java.io.File;
 import java.util.Optional;
 
@@ -28,6 +31,20 @@ public class UIController
     private TextField tfTourney;
     @FXML
     private CheckBox cbWOC;
+    @FXML
+    private Label lblIteration;
+    @FXML
+    private ToggleGroup tgTrials;
+    @FXML
+    private RadioMenuItem rmiTrial1;
+    @FXML
+    private RadioMenuItem rmiTrial5;
+    @FXML
+    private RadioMenuItem rmiTrial10;
+    @FXML
+    private RadioMenuItem rmiTrial25;
+    @FXML
+    private RadioMenuItem rmiTrial50;
 
     private LSQ lsq;
 
@@ -36,6 +53,11 @@ public class UIController
     {
         GASettings.setDefaults();
         initListeners();
+
+
+
+
+
     }
 
     public void onClickOpen()
@@ -197,5 +219,46 @@ public class UIController
             GASettings.setWisdomOfCrowds(newValue);
             System.out.println("Use Wisdom of Crowds changed to: " + GASettings.isWisdomOfCrowds());
         });
+
+        tgTrials.selectedToggleProperty().addListener((obs, oldValue, newValue) ->
+        {
+            if(newValue.equals(rmiTrial1))
+                GASettings.setNumTrials(1);
+            else if(newValue.equals(rmiTrial5))
+                GASettings.setNumTrials(5);
+            else if(newValue.equals(rmiTrial10))
+                GASettings.setNumTrials(10);
+            else if(newValue.equals(rmiTrial25))
+                GASettings.setNumTrials(25);
+            else if(newValue.equals(rmiTrial50))
+                GASettings.setNumTrials(50);
+
+            System.out.println("NumTrials changed to: " + GASettings.getNumTrials());
+        });
+    }
+
+    public void onClickGraph()
+    {
+        if(Statistics.getSolutionProgression() != null && !Statistics.getSolutionProgression().isEmpty())
+        {
+            launchGraph();
+        }
+    }
+
+
+    private void launchGraph()
+    {
+        try
+        {
+            Stage graphWindow = new Stage();
+            Parent root = FXMLLoader.load(getClass().getResource("../../fxml/graph.fxml"));
+            graphWindow.setTitle("Graph");
+            graphWindow.setScene(new Scene(root, 800, 600));
+            graphWindow.show();
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
     }
 }
