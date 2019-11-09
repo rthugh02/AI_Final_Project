@@ -267,5 +267,28 @@ public class LSQ implements Comparable<LSQ>
         return Double.compare(o.getFitness(), this.fitness);
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LSQ lsq = (LSQ) o;
+
+        for(int i = 0;i < this.dimension;i++)
+        {
+            for(int j = 0;j < this.dimension;j++)
+            {
+                if(this.lsqTable[i][j].getCharacter() != (lsq.getSymbol(i, j).getCharacter()))
+                    return false;
+            }
+        }
+
+        return getDimension() == lsq.getDimension() &&
+                getStartChar() == lsq.getStartChar() &&
+                getLowestRow() == lsq.getLowestRow() &&
+                getLowestColumn() == lsq.getLowestColumn() &&
+                Double.compare(lsq.getFitness(), getFitness()) == 0 &&
+                isCompleteSolution.equals(lsq.isCompleteSolution);
+    }
 
 }

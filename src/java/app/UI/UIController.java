@@ -3,6 +3,8 @@ package app.UI;
 import app.Algorithm.GA;
 import app.Algorithm.GASettings;
 import app.Data.*;
+import javafx.animation.FadeTransition;
+import javafx.animation.SequentialTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -12,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import java.io.File;
@@ -46,18 +49,11 @@ public class UIController
     @FXML
     private RadioMenuItem rmiTrial50;
 
-    private LSQ lsq;
-
     @FXML
     private void initialize()
     {
         GASettings.setDefaults();
         initListeners();
-
-
-
-
-
     }
 
     public void onClickOpen()
@@ -68,21 +64,40 @@ public class UIController
         //###END DEBUG CODE###
         if(opFile.isPresent())
         {
-            lsq = ReadLSQFile.createLSQFromFile(opFile.get());
-            drawGrid(lsq);
+            Statistics.setCurrentSolution(ReadLSQFile.createLSQFromFile(opFile.get()));
+            drawGrid(Statistics.getCurrentSolution());
+            Stage stage = (Stage) grid.getScene().getWindow();
+            stage.setTitle("Latin Square Solver - " + opFile.get().getName());
         }
     }
 
     public void onClickRun()
     {
-        if(lsq != null)
+        if(Statistics.getSolutionProgression() != null && !Statistics.getSolutionProgression().isEmpty())
          {
-            Population population = new Population(lsq, GASettings.getPopSize());
-            GA.calcGeneticSolution(population);
-            lsq.randomize();
-            drawGrid(lsq);
-            System.out.println(lsq.toString());
+             //run set number of times specified via settings
+            for(int x = 0; x < GASettings.getNumTrials(); x++)
+            {
+                Population population = new Population(Statistics.getCurrentSolution(), GASettings.getPopSize());
+                GA.calcGeneticSolution(population);
+                Statistics.incrementIterations();
+            }
+
+            drawGAProgression();
          }
+        else if(Statistics.getCurrentSolution() != null)
+        {
+            LSQ testDraw = new LSQ(Statistics.getCurrentSolution());
+            testDraw.randomize();
+            drawGrid(testDraw);
+        }
+
+    }
+
+    public void onClickDrawBest()
+    {
+        if(Statistics.getBestSolution() != null)
+            drawGrid(Statistics.getBestSolution());
     }
 
     //initializes grid for n x n square
@@ -133,6 +148,37 @@ public class UIController
                 grid.add(lblSymbol, i, j, 1, 1);
             }
         }
+    }
+
+    private void drawGAProgression()
+    {
+        FadeTransition ft;
+        SequentialTransition st = new SequentialTransition();
+        for(int i = 1; i < Statistics.getSolutionProgression().size();i++)
+        {
+            //don't redraw identical solutions
+            if(!Statistics.getSolutionProgression().get(i-1).equals(Statistics.getSolutionProgression().get(i)))
+            {
+                drawGrid(Statistics.getSolutionProgression().get(i));
+                //set up instant fade in transition and add to sequential transition
+                ft = new FadeTransition(Duration.millis(0.1), grid);
+                ft.setFromValue(0.0);
+                ft.setToValue(100.0);
+                ft.setDelay(Duration.millis(0.1));
+                st.getChildren().add(ft);
+                //don't fade out on last solution
+                if(i != Statistics.getSolutionProgression().size() - 1)
+                {
+                    //set up delayed instant fade out transition and add to sequential transition
+                    ft = new FadeTransition(Duration.millis(0.1), grid);
+                    ft.setFromValue(100.0);
+                    ft.setToValue(0.0);
+                    ft.setDelay(Duration.millis(100));
+                    st.getChildren().add(ft);
+                }
+            }
+        }
+        st.play();
     }
 
     //set up and return a text formatter class that will restrict a text field entry to an integer between two bounds

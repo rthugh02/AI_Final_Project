@@ -17,6 +17,8 @@ public class Statistics
     private static double minFitness;
     private static double maxFitness;
     private static double avgFitness;
+    private static LSQ currentSolution;
+    //best solution of all trials
     private static LSQ bestSolution;
 
     //stores best solution from each generation; used to visualize progression on UI
@@ -46,9 +48,9 @@ public class Statistics
         return iterations;
     }
 
-    public static void setIterations(int iterations)
+    public static void incrementIterations()
     {
-        Statistics.iterations = iterations;
+        Statistics.iterations++;
     }
 
     public static int getMinGenerations()
@@ -121,14 +123,24 @@ public class Statistics
         Statistics.avgFitness = avgFitness;
     }
 
+    public static LSQ getCurrentSolution()
+    {
+        return currentSolution;
+    }
+
+    public static void setCurrentSolution(LSQ lsq)
+    {
+        Statistics.currentSolution = new LSQ(lsq);
+    }
+
     public static LSQ getBestSolution()
     {
         return bestSolution;
     }
 
-    public static void setBestSolution(LSQ bestSolution)
+    public static void setBestSolution(LSQ lsq)
     {
-        Statistics.bestSolution = bestSolution;
+        Statistics.bestSolution = new LSQ(lsq);
     }
 
     public static ArrayList<LSQ> getSolutionProgression()

@@ -22,6 +22,15 @@ public class GraphController
     @FXML
     private void initialize()
     {
+        if(Statistics.getSeriesA() != null)
+            miGraphA.setText("{Saved}");
+        else
+            miGraphA.setText("{Empty}");
+        if(Statistics.getSeriesB() != null)
+            miGraphB.setText("{Saved}");
+        else
+            miGraphB.setText("{Empty}");
+
         series = new XYChart.Series<>();
         lineChart.setLegendVisible(false);
 

@@ -10,7 +10,7 @@ AnchorPane
 
 GridPane
 {
-    -fx-background-color: black, #303a69;
+    -fx-background-color: gray, #303a69;
     -fx-background-insets: 0, 2;
     -fx-padding: 1;
 }
@@ -69,6 +69,22 @@ GridPane
     -fx-padding: 30 5 5 5;
 }
 
+.scroll-pane
+{
+    -fx-background-color:  #38393d;
+}
+
+.viewport
+{
+    -fx-background-color:  #38393d;
+    -fx-border-color: #38393d;
+    -fx-padding: 5;
+}
+
+.text
+{
+
+}
 .cell
 {
     -fx-background-color: black, #303a69;
