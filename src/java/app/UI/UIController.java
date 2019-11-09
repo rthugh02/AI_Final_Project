@@ -49,6 +49,8 @@ public class UIController
     @FXML
     private RadioMenuItem rmiTrial50;
 
+    private LSQ lsq;
+
     @FXML
     private void initialize()
     {
@@ -64,8 +66,8 @@ public class UIController
         //###END DEBUG CODE###
         if(opFile.isPresent())
         {
-            Statistics.setCurrentSolution(ReadLSQFile.createLSQFromFile(opFile.get()));
-            drawGrid(Statistics.getCurrentSolution());
+            lsq = ReadLSQFile.createLSQFromFile(opFile.get());
+            drawGrid(lsq);
             Stage stage = (Stage) grid.getScene().getWindow();
             stage.setTitle("Latin Square Solver - " + opFile.get().getName());
         }
@@ -73,14 +75,13 @@ public class UIController
 
     public void onClickRun()
     {
-        if(Statistics.getSolutionProgression() != null && !Statistics.getSolutionProgression().isEmpty())
+        if(lsq != null)
          {
              //run set number of times specified via settings
             for(int x = 0; x < GASettings.getNumTrials(); x++)
             {
-                Population population = new Population(Statistics.getCurrentSolution(), GASettings.getPopSize());
+                Population population = new Population(lsq, GASettings.getPopSize());
                 GA.calcGeneticSolution(population);
-                Statistics.incrementIterations();
             }
 
             drawGAProgression();

@@ -7,7 +7,6 @@ public class LSQ implements Comparable<LSQ>
     private final int dimension;
     private Symbol[][] lsqTable;
     private final char startChar;
-    private Boolean isCompleteSolution = false;
 
     //-1 indicates lowest row has not been determined, other values indicate index
     private int lowestRow = -1;
@@ -84,11 +83,6 @@ public class LSQ implements Comparable<LSQ>
         return fitness;
     }
 
-    public Boolean isCompleteSolution()
-    {
-        return isCompleteSolution;
-    }
-
     //initialize the empty cells of a table with random characters
     private void init()
     {
@@ -163,7 +157,7 @@ public class LSQ implements Comparable<LSQ>
     }
     public void calcFitness() 
     {
-        int repititions = 0;
+        int repetitions = 0;
         int lowestRowCount = dimension + 1;
         int rowCountStatics = dimension + 1;
         int lowestColumnCount = dimension + 1;
@@ -175,27 +169,27 @@ public class LSQ implements Comparable<LSQ>
             HashMap<Character, Integer> repititionCounters = new HashMap<Character, Integer>(dimension);
             for(int j = 0; j < dimension; j++)
                 repititionCounters.put(lsqTable[i][j].getCharacter(), 1);
-            int localColumnRepitions = 0;
+            int localColumnRepetitions = 0;
             int localColumnStatics = 0;
             for(int j = 0; j < dimension; j++)
             {
                 if(repititionCounters.get(lsqTable[i][j].getCharacter()) < 1)
                 {
-                    repititions++;
-                    localColumnRepitions++;
+                    repetitions++;
+                    localColumnRepetitions++;
                 }
                 else
                    repititionCounters.put(lsqTable[i][j].getCharacter(), 0);
                 if(lsqTable[i][j].isLocked())
                     localColumnStatics++; 
             }
-            if(localColumnRepitions < lowestColumnCount)
+            if(localColumnRepetitions < lowestColumnCount)
             {
-                lowestColumnCount = localColumnRepitions;
+                lowestColumnCount = localColumnRepetitions;
                 columnCountStatics = localColumnStatics;
                 this.lowestColumn = i;
             }
-            else if(localColumnRepitions == lowestColumnCount && localColumnStatics < columnCountStatics)
+            else if(localColumnRepetitions == lowestColumnCount && localColumnStatics < columnCountStatics)
             {
                 columnCountStatics = localColumnStatics;
                 this.lowestColumn = i;
@@ -208,37 +202,37 @@ public class LSQ implements Comparable<LSQ>
             HashMap<Character, Integer> repititionCounters = new HashMap<Character, Integer>(dimension);
             for(int j = 0; j < dimension; j++)
                 repititionCounters.put(lsqTable[j][i].getCharacter(), 1);
-            int localRowRepitions = 0;
+            int localRowRepetitions = 0;
             int localRowStatics = 0;
             for(int j = 0; j < dimension; j++)
             {
                 if(repititionCounters.get(lsqTable[j][i].getCharacter()) < 1)
                 {
-                    repititions++;
-                    localRowRepitions++;
+                    repetitions++;
+                    localRowRepetitions++;
                 }
                 else
                    repititionCounters.put(lsqTable[j][i].getCharacter(), 0);
                 if(lsqTable[j][i].isLocked())
                     localRowStatics++; 
             }
-            if(localRowRepitions < lowestRowCount)
+            if(localRowRepetitions < lowestRowCount)
             {
-                lowestRowCount = localRowRepitions;
+                lowestRowCount = localRowRepetitions;
                 rowCountStatics = localRowStatics;
                 this.lowestRow = i;
             }
-            else if(localRowRepitions == lowestRowCount && localRowStatics < rowCountStatics)
+            else if(localRowRepetitions == lowestRowCount && localRowStatics < rowCountStatics)
             {
                 rowCountStatics = localRowStatics;
                 this.lowestRow = i;
             }
         }
 
-        if(repititions != 0)
-            this.fitness = (double)1/repititions;
+        if(repetitions != 0)
+            this.fitness = (double)1/repetitions;
         else
-            this.isCompleteSolution = true;
+            this.fitness = 2.0;
     }
 
     @Override
@@ -287,8 +281,7 @@ public class LSQ implements Comparable<LSQ>
                 getStartChar() == lsq.getStartChar() &&
                 getLowestRow() == lsq.getLowestRow() &&
                 getLowestColumn() == lsq.getLowestColumn() &&
-                Double.compare(lsq.getFitness(), getFitness()) == 0 &&
-                isCompleteSolution.equals(lsq.isCompleteSolution);
+                Double.compare(lsq.getFitness(), getFitness()) == 0;
     }
 
 }

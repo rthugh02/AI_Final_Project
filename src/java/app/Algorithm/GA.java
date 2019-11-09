@@ -26,6 +26,8 @@ public class GA
                 - integrate children into population
                 - kill off weakest solutions
             }
+
+            //TODO make sure to call Statistics.updateAggregateData() at end of GA calculation
         */  
     }
 

@@ -7,9 +7,10 @@ import java.util.ArrayList;
 //helper class for keeping track of statistics during running multiple trials
 public class Statistics
 {
+
+    //##########Aggregate data over multiple trial runs/iterations############
     //number of times the genetic algorithm has been run in succession with no settings change
     private static int iterations;
-
     private static int minGenerations;
     private static int maxGenerations;
     private static int avgGenerations;
@@ -17,16 +18,25 @@ public class Statistics
     private static double minFitness;
     private static double maxFitness;
     private static double avgFitness;
-    private static LSQ currentSolution;
+    private static double stdDev;
     //best solution of all trials
     private static LSQ bestSolution;
+    //########################################################################
 
-    //stores best solution from each generation; used to visualize progression on UI
+    //##########data for the current run##############
+    private static LSQ currentSolution;
+
+
+    //stores best solution from each generation for one iteration; used to visualize progression on UI
     private static ArrayList<LSQ> solutionProgression;
+    //################################################
 
+    //##########graph data#############################
     //series data stored here for comparison on graph
+    //graph results can be saved to either A or B and compared
     private static XYChart.Series<Integer, Double> seriesA;
     private static XYChart.Series<Integer, Double> seriesB;
+    //####################################################
 
     //sets default values for all statistics; should be called on startup or when GA settings change
     public static void reset()
@@ -39,18 +49,15 @@ public class Statistics
         minFitness = Double.POSITIVE_INFINITY;
         maxFitness = 0.0;
         avgFitness = 0.0;
-
+        stdDev = 0.0;
+        currentSolution = null;
+        bestSolution = null;
         solutionProgression = new ArrayList<>();
     }
 
     public static int getIterations()
     {
         return iterations;
-    }
-
-    public static void incrementIterations()
-    {
-        Statistics.iterations++;
     }
 
     public static int getMinGenerations()
@@ -121,6 +128,16 @@ public class Statistics
     public static void setAvgFitness(double avgFitness)
     {
         Statistics.avgFitness = avgFitness;
+    }
+
+    public static double getStdDev()
+    {
+        return stdDev;
+    }
+
+    public static void setStdDev(double stdDev)
+    {
+        Statistics.stdDev = stdDev;
     }
 
     public static LSQ getCurrentSolution()
@@ -194,4 +211,47 @@ public class Statistics
             Statistics.seriesB.getData().add(d);
         }
     }
+
+    //adds new solution from a GA to aggregate data and recalculates statistics
+    public static void updateAggregateData(LSQ solution, int numGenerations)
+    {
+        Statistics.iterations++;
+        Statistics.currentSolution = new LSQ(solution);
+        Statistics.addSolutionToProgression(solution);
+        if(Double.compare(solution.getFitness(), 2.0) == 0)
+            Statistics.timesSolutionFound++;
+
+        //update min/max values if applicable
+        if(solution.getFitness() < minFitness)
+        {
+            Statistics.minFitness = solution.getFitness();
+            bestSolution = new LSQ(solution);
+        }
+        if(solution.getFitness() > maxFitness)
+            Statistics.maxFitness = solution.getFitness();
+        if(numGenerations < minGenerations || minGenerations == 0)
+            Statistics.minGenerations = numGenerations;
+        if(numGenerations > maxGenerations)
+            Statistics.maxGenerations = numGenerations;
+        //update averages
+        int totalFitness = 0;
+        int totalGenerations = 0;
+        for(LSQ lsq: solutionProgression)
+        {
+            totalFitness += lsq.getFitness();
+            totalGenerations += numGenerations;
+        }
+        Statistics.avgFitness = totalFitness / (double) Statistics.iterations;
+        Statistics.avgGenerations = totalGenerations / Statistics.iterations;
+
+        //calculate standard deviation
+        double totalDeviation = 0.0;
+        for(LSQ lsq: solutionProgression)
+        {
+            totalDeviation += Math.sqrt(lsq.getFitness() - avgFitness);
+        }
+        stdDev = Math.sqrt(totalDeviation / (double) iterations);
+
+    }
+
 }

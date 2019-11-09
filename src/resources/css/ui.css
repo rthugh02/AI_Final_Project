@@ -10,9 +10,8 @@ AnchorPane
 
 GridPane
 {
-    -fx-background-color: gray, #303a69;
+    -fx-background-color: gray, #38393d;
     -fx-background-insets: 0, 2;
-    -fx-padding: 1;
 }
 
 .title-box
@@ -51,7 +50,7 @@ GridPane
 
 .menu-bar
 {
-    -fx-background-color: black, darkgray;
+    -fx-background-color: darkgray;
 }
 
 .split-pane
@@ -87,7 +86,7 @@ GridPane
 }
 .cell
 {
-    -fx-background-color: black, #303a69;
+    -fx-background-color: gray, #38393d;
     -fx-background-insets: 0, 2;
 }
 

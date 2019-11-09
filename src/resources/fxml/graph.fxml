@@ -34,10 +34,10 @@
       </MenuBar>
       <LineChart fx:id="lineChart" animated="false" layoutY="-46.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
         <xAxis>
-          <NumberAxis animated="false" side="BOTTOM" />
+          <NumberAxis animated="false" label="Generations" side="BOTTOM" />
         </xAxis>
         <yAxis>
-          <NumberAxis animated="false" side="LEFT" />
+          <NumberAxis animated="false" label="Fitness" side="LEFT" />
         </yAxis>
       </LineChart>
    </children>
