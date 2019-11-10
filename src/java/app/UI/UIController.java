@@ -2,6 +2,7 @@ package app.UI;
 
 import app.Algorithm.GA;
 import app.Algorithm.GASettings;
+import app.Algorithm.WOC;
 import app.Data.*;
 import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
@@ -86,12 +87,14 @@ public class UIController
 
             drawGAProgression();
          }
-        else if(Statistics.getCurrentSolution() != null)
+
+        //#####test code#####
+       /* if(lsq != null)
         {
-            LSQ testDraw = new LSQ(Statistics.getCurrentSolution());
-            testDraw.randomize();
-            drawGrid(testDraw);
-        }
+            Population pop = new Population(lsq, GASettings.getPopSize());
+            System.out.println(WOC.getWOCSolution(pop));
+        }*/
+        //###################
 
     }
 

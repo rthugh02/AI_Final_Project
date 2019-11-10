@@ -49,6 +49,7 @@ public class Population
     public ArrayList<LSQ> getPopulationMembersSorted() 
     {
         Collections.sort(this.populationMembers);
+        Collections.reverse(this.populationMembers);
         return this.populationMembers;
     }
 

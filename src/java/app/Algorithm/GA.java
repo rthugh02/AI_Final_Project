@@ -94,29 +94,32 @@ public class GA
     }
       
     
-    private ArrayList<LSQ> mutation(LSQ original)
+    private LSQ mutation(LSQ original)
     {
     	LSQ mutated = new LSQ(original);
-    	int max = LSQ.getDimension();		//uses the dimension, minus one, to get the range for the random array slot
-    	boolean symb1clear = FALSE;		//booleans to make sure that both symbols are not locked
-    	boolean symb2clear = FALSE;
-    	
-    	while(symb1clear == FALSE)		//randomly picks symbol until it isn't locked
+    	int max = original.getDimension();		//uses the dimension to get the range for the random array slot
+    	boolean symb1clear = false;		//booleans to make sure that both symbols are not locked
+    	boolean symb2clear = false;
+    	int symb1col, symb1row, symb2col, symb2row;
+    	symb1col = symb1row = symb2col = symb2row = 0;
+
+    	Random rand = new Random();
+    	while(!symb1clear)		//randomly picks symbol until it isn't locked
     	{
-    		int symb1col = rand.nextInt(max);
-    		int symb1row = rand.nextInt(max);
+    		symb1col = rand.nextInt(max);
+    		symb1row = rand.nextInt(max);
     		if(!original.getSymbol(symb1col, symb1row).isLocked())
     		{
-    			symb1clear = TRUE;
+    			symb1clear = false;
     		}
     	}
-    	while(symb2clear == FALSE)
+    	while(!symb2clear)
     	{
-    		int symb2col = rand.nextInt(max);
-    		int symb2row = rand.nextInt(max);
+    		symb2col = rand.nextInt(max);
+    		symb2row = rand.nextInt(max);
     		if(!original.getSymbol(symb2col, symb2row).isLocked())
     		{
-    			symb2clear = TRUE
+    			symb2clear = true;
     		}
     	}
     		
