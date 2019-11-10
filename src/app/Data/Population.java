@@ -54,11 +54,14 @@ public class Population
 
     public void addMember(LSQ member) 
     {
+        member.calcFitness();
         this.populationMembers.add(member);
     }
 
     public void addMembers(ArrayList<LSQ> members) 
     {
+        for(LSQ member : members)
+            member.calcFitness();
         this.populationMembers.addAll(members);
     }
 

@@ -54,7 +54,24 @@ public class GA
               }
               population.addMembers(mutatedMembers);
 
-              //2. Selection
+              //2. Tournament Selection
+              int selectionAmount = GASettings.getTourneySelectionNumber();
+              ArrayList<LSQ> parents = new ArrayList<>();
+
+              //number of parents will be 20% of total population size
+              for(int i = 0; i < (int)(population.getPopulationMembers().size() * 0.2); i++) 
+              {
+                  parents.add(selectByTournament(population, selectionAmount));
+              }
+
+              //3. Crossover operations
+              ArrayList<LSQ> children = new ArrayList<>();
+              for(int i = 0; i < parents.size() - 2; i++)
+              {
+                  children.addAll(crossover(parents.get(i), parents.get(i+1)));
+              }
+
+              //4. adding new children back in and evaluating population
           }  
 
     }
