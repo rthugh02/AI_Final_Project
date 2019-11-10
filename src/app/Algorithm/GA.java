@@ -6,10 +6,14 @@ import app.Data.Symbol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 
 public class GA
 {
+    //variable counting number of generations where highest fitness hasn't changed
+    private static int noFitnessChanges = 0;
+    private static LSQ bestSolution;
     //Best solution will be added to Statistics.SolutionProgression for each generation
     public static void calcGeneticSolution(Population population)
     {
@@ -30,11 +34,34 @@ public class GA
 
             //TODO make sure to call Statistics.updateAggregateData() at end of GA calculation
         */  
+          while(noFitnessChanges != 500 || (bestSolution != null && bestSolution.getFitness() != 2))
+          {
+              //1. apply mutation operator to population
+              Random rand = new Random();
+              double mutationChance = GASettings.getMutationChance();
+              Iterator<LSQ> it = population.getPopulationMembers().iterator();
+              ArrayList<LSQ> mutatedMembers = new ArrayList<>();
+              while(it.hasNext())
+              {
+                LSQ solution = it.next();
+                double randomVal = rand.nextDouble();
+                if(randomVal <= mutationChance)
+                {
+                    LSQ mutatedSolution = mutation(solution);
+                    mutatedMembers.add(mutatedSolution);
+                    it.remove();
+                }
+              }
+              population.addMembers(mutatedMembers);
+
+              //2. Selection
+          }  
+
     }
 
     //crossover that passes on each parent's best(least conflicts) row and column to separate children
     //..and fills the remaining cells with as many of the opposite parent's corresponding cells as possible
-    public static ArrayList<LSQ> crossover(LSQ parent1, LSQ parent2)
+    private static ArrayList<LSQ> crossover(LSQ parent1, LSQ parent2)
     {
         ArrayList<LSQ> children = new ArrayList<>();
         LSQ child1 = new LSQ(parent1);
@@ -106,7 +133,7 @@ public class GA
         return children;
     }
 
-    private LSQ selectByTournament(Population population, int selectionAmount) 
+    private static LSQ selectByTournament(Population population, int selectionAmount) 
     {
         Random rand = new Random();
         int randomIndex;
@@ -126,7 +153,7 @@ public class GA
     }
       
     
-    private LSQ mutation(LSQ original)
+    private static LSQ mutation(LSQ original)
     {
     	LSQ mutated = new LSQ(original);
     	int max = original.getDimension();		//uses the dimension to get the range for the random array slot

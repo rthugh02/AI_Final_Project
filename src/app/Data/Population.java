@@ -49,13 +49,17 @@ public class Population
     public ArrayList<LSQ> getPopulationMembersSorted() 
     {
         Collections.sort(this.populationMembers);
-        Collections.reverse(this.populationMembers);
         return this.populationMembers;
     }
 
     public void addMember(LSQ member) 
     {
         this.populationMembers.add(member);
+    }
+
+    public void addMembers(ArrayList<LSQ> members) 
+    {
+        this.populationMembers.addAll(members);
     }
 
     //Take the LSQ, generate random solutions for the given population
