@@ -39,7 +39,8 @@ public class GA
         */
         workingPopulation = population; 
         int numGenerations = 0; 
-          while(noFitnessChanges != 500 || (bestSolution != null && bestSolution.getFitness() != 2))
+        bestSolution = population.getPopulationMembersSorted().get(0);
+          while(noFitnessChanges != 1000 && bestSolution.getFitness() != 2)
           {
               //1. apply mutation operator to population
               Random rand = new Random();
@@ -98,9 +99,8 @@ public class GA
               workingPopulation = new Population(nextGeneration);
               numGenerations++;
               LSQ topMember = nextGeneration.get(0);
-              if(bestSolution == null)
-                bestSolution = topMember;
-              else if(Double.compare(topMember.getFitness(), bestSolution.getFitness()) < 0)
+              
+              if(Double.compare(topMember.getFitness(), bestSolution.getFitness()) > 0)
                 {
                     bestSolution = topMember;
                     noFitnessChanges = 0;
@@ -109,7 +109,6 @@ public class GA
                 noFitnessChanges++;
               Statistics.updateAggregateData(topMember, numGenerations);
           }  
-
     }
 
     //crossover that passes on each parent's best(least conflicts) row and column to separate children
@@ -222,7 +221,7 @@ public class GA
     		symb1row = rand.nextInt(max);
     		if(!original.getSymbol(symb1col, symb1row).isLocked())
     		{
-    			symb1clear = false;
+    			symb1clear = true;
     		}
     	}
     	while(!symb2clear)
