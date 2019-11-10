@@ -19,7 +19,7 @@ public class LSQ implements Comparable<LSQ>
         this.dimension = dimension;
         this.lsqTable = lsqTable.clone();
         this.startChar = startChar;
-        init();
+        fillEmptyCells();
     }
 
     public LSQ(LSQ lsq)
@@ -63,7 +63,10 @@ public class LSQ implements Comparable<LSQ>
 
     public Symbol getSymbol(int column, int row)
     {
-        return new Symbol(lsqTable[column][row]);
+        if(lsqTable[column][row] != null)
+            return new Symbol(lsqTable[column][row]);
+        else
+            return null;
     }
 
     public void setSymbol(Symbol symbol, int column, int row) { this.lsqTable[column][row] = symbol;}
@@ -84,32 +87,9 @@ public class LSQ implements Comparable<LSQ>
     }
 
     //initialize the empty cells of a table with random characters
-    private void init()
+    public void fillEmptyCells()
     {
-        //pool of usable characters, incremented from start character
-        ArrayList<Character> charPool = new ArrayList<>();
-        //number of times character can be placed
-        HashMap<Character, Integer> charCount = new HashMap<>();
-        char c = startChar;
-        for(int x = 0; x < dimension; x++)
-        {
-            charPool.add(c);
-            charCount.put(c, dimension);
-            c++;
-        }
-
-        //find existing symbols and reduce counts
-        for(int i = 0; i < dimension; i++)
-        {
-            for(int j = 0; j < dimension; j++)
-            {
-                if(lsqTable[i][j] != null)
-                {
-                    c = lsqTable[i][j].getCharacter();
-                    charCount.put(c, charCount.get(c) - 1);
-                }
-            }
-        }
+        HashMap<Character, Integer> charPool = getCharacterPool();
 
         Random rand = new Random();
         //iterate through columns and rows of table and add random symbols
@@ -120,18 +100,20 @@ public class LSQ implements Comparable<LSQ>
                 int poolIndex;
                 if(lsqTable[i][j] == null)
                 {
-                    //select random index to pull from pool
-                    poolIndex = rand.nextInt(charPool.size());
-                    c = charPool.get(poolIndex);
+                    //create arraylist from charPool keys to pull by index
+                    ArrayList<Character> charPoolList = new ArrayList<>(charPool.keySet());
+                    //select random index to pull
+                    poolIndex = rand.nextInt(charPoolList.size());
+                    //get random character and create new symbol
+                    char c = charPoolList.get(poolIndex);
                     lsqTable[i][j] = new Symbol(c, false);
 
                     //decrement currently selected character or remove if only one left
-                    if(charCount.get(c) > 1)
-                        charCount.put(c, charCount.get(c) - 1);
+                    if(charPool.get(c) > 1)
+                        charPool.put(c, charPool.get(c) - 1);
                     else
                     {
-                        charCount.remove(c);
-                        charPool.remove((Character) c);
+                        charPool.remove(c);
                     }
                 }
             }
@@ -141,20 +123,11 @@ public class LSQ implements Comparable<LSQ>
 
     public void randomize()
     {
-        //clear the table of non-locked symbols
-        for(int i = 0; i < dimension; i++)
-        {
-            for(int j = 0; j < dimension; j++)
-            {
-                if(!lsqTable[i][j].isLocked())
-                    lsqTable[i][j] = null;
-            }
-        }
-
-        //call init again to get a randomized table
-        init();
-        calcFitness();
+        emptyTable();
+        //call fillEmptyCells to get a randomized table
+        fillEmptyCells();
     }
+
     public void calcFitness() 
     {
         int repetitions = 0;
@@ -235,6 +208,62 @@ public class LSQ implements Comparable<LSQ>
             this.fitness = 2.0;
     }
 
+    //remove all non-locked symbols from the table
+    public void emptyTable()
+    {
+        for(int i = 0; i < dimension; i++)
+        {
+            for(int j = 0; j < dimension; j++)
+            {
+                if(!lsqTable[i][j].isLocked())
+                    lsqTable[i][j] = null;
+            }
+        }
+    }
+
+    //get a pool of counts of remaining available characters to fill an incomplete solution
+    public HashMap<Character, Integer> getCharacterPool()
+    {
+        //fill up character pool based on start char
+        HashMap<Character, Integer> characterPool = new HashMap<>();
+        char c = startChar;
+        for(int x = 0; x < dimension; x++)
+        {
+            characterPool.put(c, dimension);
+            c++;
+        }
+
+        //subtract existing symbols from character pool
+        for(int i = 0; i < dimension; i++)
+        {
+            for(int j = 0; j < dimension; j++)
+            {
+                if(lsqTable[i][j] != null)
+                {
+                    Character character = lsqTable[i][j].getCharacter();
+                    if(characterPool.containsKey(character))
+                    {
+                        if(characterPool.get(character) > 1)
+                            characterPool.put(character, characterPool.get(character) - 1);
+                        else
+                            characterPool.remove(character);
+                    }
+                }
+            }
+        }
+
+        return characterPool;
+    }
+
+    //if the cell is valid, an empty characterpool should be created from it
+    public boolean validateTable()
+    {
+        if(getCharacterPool().isEmpty())
+            return true;
+        else
+            return false;
+    }
+
     @Override
     public String toString()
     {
@@ -250,7 +279,7 @@ public class LSQ implements Comparable<LSQ>
             for(int i = 0; i < dimension; i++)
             {
                 str.append(lsqTable[i][j].getCharacter());
-                str.append("  ");
+                str.append("\t");
             }
         }
         return str.toString();

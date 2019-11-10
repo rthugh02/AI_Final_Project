@@ -5,6 +5,7 @@ import app.Data.Population;
 import app.Data.Symbol;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class GA
@@ -32,13 +33,14 @@ public class GA
     }
 
     //crossover that passes on each parent's best(least conflicts) row and column to separate children
-    //..and fills the remaining cells with the opposite parent's corresponding cells
-    private ArrayList<LSQ> crossover(LSQ parent1, LSQ parent2)
+    //..and fills the remaining cells with as many of the opposite parent's corresponding cells as possible
+    public static ArrayList<LSQ> crossover(LSQ parent1, LSQ parent2)
     {
         ArrayList<LSQ> children = new ArrayList<>();
-        //since remaining cells are filled from opposite parent, just start with clone of opposite parent
-        LSQ child1 = new LSQ(parent2);
+        LSQ child1 = new LSQ(parent1);
         LSQ child2 = new LSQ(parent1);
+        child1.emptyTable();
+        child2.emptyTable();
 
         int p1Col = parent1.getLowestColumn();
         int p1Row = parent1.getLowestRow();
@@ -49,24 +51,54 @@ public class GA
         for(int i = 0; i < parent1.getDimension(); i++)
         {
             //copy values of parent1's best row to child1
-            if(!child1.getSymbol(i, p1Row).isLocked())
+            if(!parent1.getSymbol(i, p1Row).isLocked())
                 child1.setSymbol(new Symbol(parent1.getSymbol(i, p1Row)), i, p1Row);
 
             //copy values of parent2's best row to child2
-            if(!child2.getSymbol(i, p2Row).isLocked())
+            if(!parent2.getSymbol(i, p2Row).isLocked())
                 child2.setSymbol(new Symbol(parent2.getSymbol(i, p2Row)), i, p2Row);
 
             //copy values of parent1's best col to child1
-            if(!child1.getSymbol(p1Col, i).isLocked())
+            if(!parent1.getSymbol(p1Col, i).isLocked())
                 child1.setSymbol(new Symbol(parent1.getSymbol(p1Col, i)), p1Col, i);
 
             //copy values of parent2's best col to child2
-            if(!child2.getSymbol(p2Col, i).isLocked())
+            if(!parent2.getSymbol(p2Col, i).isLocked())
                 child2.setSymbol(new Symbol(parent2.getSymbol(p2Col, i)), p2Col, i);
         }
-        //recalculate new fitness
-        child1.calcFitness();
-        child2.calcFitness();
+
+        HashMap<Character, Integer> charPool1 = child1.getCharacterPool();
+        HashMap<Character, Integer> charPool2 = child2.getCharacterPool();
+        //try to fill empty cells with opposite parent if possible
+        for(int i = 0; i < parent1.getDimension(); i++)
+        {
+            for(int j = 0; j < parent1.getDimension(); j++)
+            {
+                //for empty cell, if symbol in opposite parent's cell is available, assign it
+                if(child1.getSymbol(i, j) == null && charPool1.containsKey(parent2.getSymbol(i, j).getCharacter()))
+                {
+                    child1.setSymbol(new Symbol(parent2.getSymbol(i, j)), i, j);
+                    if(charPool1.get(parent2.getSymbol(i, j).getCharacter()) > 1)
+                        {charPool1.put(parent2.getSymbol(i, j).getCharacter(),
+                                charPool1.get(parent2.getSymbol(i, j).getCharacter()) - 1);}
+                    else
+                        charPool1.remove(parent2.getSymbol(i, j).getCharacter());
+                }
+                //same for other child
+                if(child2.getSymbol(i, j) == null && charPool2.containsKey(parent1.getSymbol(i, j).getCharacter()))
+                {
+                    child2.setSymbol(new Symbol(parent1.getSymbol(i, j)), i, j);
+                    if(charPool2.get(parent1.getSymbol(i, j).getCharacter()) > 1)
+                       {charPool2.put(parent1.getSymbol(i, j).getCharacter(),
+                                charPool2.get(parent1.getSymbol(i, j).getCharacter()) - 1);}
+                    else
+                        charPool2.remove(parent1.getSymbol(i, j).getCharacter());
+                }
+            }
+        }
+
+        child1.fillEmptyCells();
+        child2.fillEmptyCells();
 
         //return the new children
         children.add(child1);

@@ -18,39 +18,15 @@ public class WOC
     public static LSQ getWOCSolution(Population population)
     {
         initBestSolutions(population);
-        initCharacterPool(population.getMember(0));
+        //create clone of one of the solutions
+        wocSolution = new LSQ(population.getMember(0));
+        //remove all non-locked symbols
+        wocSolution.emptyTable();
+        //get character pool from empty table
+        characterPool = wocSolution.getCharacterPool();
         initCellAgreements();
         fillWOCSolution();
         return wocSolution;
-    }
-
-    //initialize character pool that shows which characters are still available to insert
-    private static void initCharacterPool(LSQ lsq)
-    {
-        //fill up character pool based on start char
-        characterPool = new HashMap<>();
-        char c = lsq.getStartChar();
-        for(int x = 0; x < lsq.getDimension(); x++)
-        {
-            characterPool.put(c, lsq.getDimension());
-            c++;
-        }
-
-        //substract locked symbols
-        for(int i = 0; i < lsq.getDimension(); i++)
-        {
-            for(int j = 0; j < lsq.getDimension(); j++)
-            {
-                if(lsq.getSymbol(i, j).isLocked())
-                {
-                    Character character = lsq.getSymbol(i, j).getCharacter();
-                    if(characterPool.get(character) > 1)
-                        characterPool.put(character, characterPool.get(character) - 1);
-                    else
-                        characterPool.remove(character);
-                }
-            }
-        }
     }
 
     //initialize bestSolutions, which is a subset of the population with the highest fitness scores
@@ -123,8 +99,6 @@ public class WOC
     private static void fillWOCSolution()
     {
         int dim = bestSolutions.get(0).getDimension();
-        //just initialize with a copy of one of the lsqs
-        wocSolution = new LSQ(bestSolutions.get(0));
 
         //go through each available cell to be assigned via the ArrayList
         while(!cellAgreements.isEmpty() )

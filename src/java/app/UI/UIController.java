@@ -19,6 +19,7 @@ import javafx.util.Duration;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class UIController
@@ -62,9 +63,6 @@ public class UIController
     public void onClickOpen()
     {
         Optional<File> opFile = ReadLSQFile.fileSelection();
-        //###DEBUG CODE FOR QUICK FILE SELECTION###
-        //Optional<File> opFile = Optional.of(new File("samplefiles/lsq10.lsq"));
-        //###END DEBUG CODE###
         if(opFile.isPresent())
         {
             lsq = ReadLSQFile.createLSQFromFile(opFile.get());
@@ -89,7 +87,7 @@ public class UIController
          }
 
         //#####test code#####
-       /* if(lsq != null)
+      /*  if(lsq != null)
         {
             Population pop = new Population(lsq, GASettings.getPopSize());
             System.out.println(WOC.getWOCSolution(pop));
