@@ -18,7 +18,7 @@ public class GA
     private static LSQ bestSolution;
     private static Population workingPopulation; 
     //Best solution will be added to Statistics.SolutionProgression for each generation
-    public static void calcGeneticSolution(Population population)
+    public static Population calcGeneticSolution(Population population)
     {
         //TODO implement Genetic Algorithm based on population
         
@@ -108,7 +108,8 @@ public class GA
               else if(Double.compare(topMember.getFitness(), bestSolution.getFitness() ) == 0)
                 noFitnessChanges++;
               Statistics.updateAggregateData(topMember, numGenerations);
-          }  
+          }
+          return workingPopulation;  
     }
 
     //crossover that passes on each parent's best(least conflicts) row and column to separate children

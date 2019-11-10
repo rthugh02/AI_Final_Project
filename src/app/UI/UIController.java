@@ -79,20 +79,14 @@ public class UIController
             for(int x = 0; x < GASettings.getNumTrials(); x++)
             {
                 Population population = new Population(lsq, GASettings.getPopSize());
-                GA.calcGeneticSolution(population);
+                population = GA.calcGeneticSolution(population);
+                if(GASettings.isWisdomOfCrowds())
+                {
+                    System.out.println(WOC.getWOCSolution(population));
+                }
             }
-
             drawGAProgression();
          }
-
-        //#####test code#####
-      /*  if(lsq != null)
-        {
-            Population pop = new Population(lsq, GASettings.getPopSize());
-            System.out.println(WOC.getWOCSolution(pop));
-        }*/
-        //###################
-
     }
 
     public void onClickDrawBest()
