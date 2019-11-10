@@ -98,8 +98,6 @@ public class WOC
     //creates the solution
     private static void fillWOCSolution()
     {
-        int dim = bestSolutions.get(0).getDimension();
-
         //go through each available cell to be assigned via the ArrayList
         while(!cellAgreements.isEmpty() )
         {

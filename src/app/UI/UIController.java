@@ -19,7 +19,6 @@ import javafx.util.Duration;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Optional;
 
 public class UIController

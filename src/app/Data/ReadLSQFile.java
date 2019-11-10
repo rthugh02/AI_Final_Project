@@ -58,7 +58,7 @@ public class ReadLSQFile
             dimension = fileScan.nextInt();
             //next line should have start char
             fileScan.nextLine();
-            String str = fileScan.next();
+            fileScan.next();
             //cast int as char (ascii)
             startChar = (char) fileScan.nextInt();
         }
