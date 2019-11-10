@@ -21,6 +21,11 @@ public class Population
         this.populationMembers = new ArrayList<LSQ>(population.getPopulationMembers());
     }
 
+    public Population(ArrayList<LSQ> members)
+    {
+        this.populationMembers = members;
+    }
+
     public Population() 
     {
         populationMembers = new ArrayList<LSQ>();

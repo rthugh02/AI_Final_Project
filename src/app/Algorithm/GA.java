@@ -2,9 +2,11 @@ package app.Algorithm;
 
 import app.Data.LSQ;
 import app.Data.Population;
+import app.Data.Statistics;
 import app.Data.Symbol;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
@@ -14,6 +16,7 @@ public class GA
     //variable counting number of generations where highest fitness hasn't changed
     private static int noFitnessChanges = 0;
     private static LSQ bestSolution;
+    private static Population workingPopulation; 
     //Best solution will be added to Statistics.SolutionProgression for each generation
     public static void calcGeneticSolution(Population population)
     {
@@ -33,13 +36,15 @@ public class GA
             }
 
             //TODO make sure to call Statistics.updateAggregateData() at end of GA calculation
-        */  
+        */
+        workingPopulation = population; 
+        int numGenerations = 0; 
           while(noFitnessChanges != 500 || (bestSolution != null && bestSolution.getFitness() != 2))
           {
               //1. apply mutation operator to population
               Random rand = new Random();
               double mutationChance = GASettings.getMutationChance();
-              Iterator<LSQ> it = population.getPopulationMembers().iterator();
+              Iterator<LSQ> it = workingPopulation.getPopulationMembers().iterator();
               ArrayList<LSQ> mutatedMembers = new ArrayList<>();
               while(it.hasNext())
               {
@@ -52,16 +57,16 @@ public class GA
                     it.remove();
                 }
               }
-              population.addMembers(mutatedMembers);
+              workingPopulation.addMembers(mutatedMembers);
 
               //2. Tournament Selection
               int selectionAmount = GASettings.getTourneySelectionNumber();
               ArrayList<LSQ> parents = new ArrayList<>();
 
               //number of parents will be 20% of total population size
-              for(int i = 0; i < (int)(population.getPopulationMembers().size() * 0.2); i++) 
+              for(int i = 0; i < (int)(workingPopulation.getPopulationMembers().size() * 0.2); i++) 
               {
-                  parents.add(selectByTournament(population, selectionAmount));
+                  parents.add(selectByTournament(workingPopulation, selectionAmount));
               }
 
               //3. Crossover operations
@@ -71,7 +76,38 @@ public class GA
                   children.addAll(crossover(parents.get(i), parents.get(i+1)));
               }
 
-              //4. adding new children back in and evaluating population
+              //4a. adding the elite to the next generation
+              int elitism = GASettings.getElitism();
+              ArrayList<LSQ> sortedMembers = workingPopulation.getPopulationMembersSorted();
+              ArrayList<LSQ> nextGeneration = new ArrayList<>();
+              for(int i = 0; i < elitism; i++) 
+              {
+                  nextGeneration.add(sortedMembers.get(i));
+                  sortedMembers.remove(i);
+              }
+
+              //4b. adding children into population and evaluating
+              sortedMembers.addAll(children);
+              Collections.sort(sortedMembers);
+              int populationSize = GASettings.getPopSize();
+              for(int i = 0; i < populationSize - elitism; i++)
+              {
+                  nextGeneration.add(sortedMembers.get(i));
+              }
+              Collections.sort(nextGeneration);
+              workingPopulation = new Population(nextGeneration);
+              numGenerations++;
+              LSQ topMember = nextGeneration.get(0);
+              if(bestSolution == null)
+                bestSolution = topMember;
+              else if(Double.compare(topMember.getFitness(), bestSolution.getFitness()) < 0)
+                {
+                    bestSolution = topMember;
+                    noFitnessChanges = 0;
+                }
+              else if(Double.compare(topMember.getFitness(), bestSolution.getFitness() ) == 0)
+                noFitnessChanges++;
+              Statistics.updateAggregateData(topMember, numGenerations);
           }  
 
     }
