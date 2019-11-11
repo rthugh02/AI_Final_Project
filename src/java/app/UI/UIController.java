@@ -9,11 +9,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.converter.DoubleStringConverter;
@@ -36,7 +36,7 @@ public class UIController
     @FXML
     private CheckBox cbWOC;
     @FXML
-    private Label lblIteration;
+    private Label lblIterations;
     @FXML
     private ToggleGroup tgTrials;
     @FXML
@@ -49,6 +49,8 @@ public class UIController
     private RadioMenuItem rmiTrial25;
     @FXML
     private RadioMenuItem rmiTrial50;
+    @FXML
+    private Text txtStatistics;
 
     private LSQ lsq;
 
@@ -80,6 +82,8 @@ public class UIController
             {
                 Population population = new Population(lsq, GASettings.getPopSize());
                 GA.calcGeneticSolution(population);
+                lblIterations.setText(Integer.toString(Statistics.getIterations()));
+                txtStatistics.setText(Statistics.statsAsString());
             }
             System.out.println("finished GA");
             drawGAProgression();

@@ -80,9 +80,12 @@ GridPane
     -fx-padding: 5;
 }
 
-.text
+.stats-text
 {
-
+    -fx-fill: white;
+    -fx-font-family: System Regular;
+    -fx-font-size: 14;
+    -fx-padding: 5 5 1 5;
 }
 .cell
 {

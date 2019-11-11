@@ -19,8 +19,6 @@ public class GA
     //Best solution will be added to Statistics.SolutionProgression for each generation
     public static Population calcGeneticSolution(Population population)
     {
-        //TODO implement Genetic Algorithm based on population
-        
         /*
             GA Algorithm set up:
             
@@ -33,8 +31,6 @@ public class GA
                 - integrate children into population
                 - kill off weakest solutions
             }
-
-            //TODO make sure to call Statistics.updateAggregateData() at end of GA calculation
         */
         Statistics.resetProgression();
         workingPopulation = population;

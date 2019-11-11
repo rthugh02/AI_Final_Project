@@ -17,7 +17,7 @@ public class GASettings
         popSize = 200;
         mutationChance = 0.002;
         wisdomOfCrowds = true;
-        elitism = 0;
+        elitism = 2;
         tourneySelectionNumber = 3;
         numTrials = 1;
         Statistics.reset();

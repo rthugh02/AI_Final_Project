@@ -2,6 +2,7 @@ package app.Data;
 
 import javafx.scene.chart.XYChart;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 //helper class for keeping track of statistics during running multiple trials
@@ -21,10 +22,12 @@ public class Statistics
     private static double stdDev;
     private static LSQ aggregateBestSolution;
     private static ArrayList<LSQ> solutionHistory;
+    private static int totalGenerations;
     //########################################################################
 
     //##########data for the current run##############
     private static LSQ currentSolution;
+    private static int currentGenerations;
     //stores best solution from each generation for one iteration; used to visualize progression on UI
     private static ArrayList<LSQ> solutionProgression;
     //################################################
@@ -49,9 +52,11 @@ public class Statistics
         avgFitness = 0.0;
         stdDev = 0.0;
         currentSolution = null;
+        currentGenerations = 0;
         aggregateBestSolution = null;
         solutionProgression = new ArrayList<>();
         solutionHistory = new ArrayList<>();
+        totalGenerations = 0;
     }
 
     public static void resetProgression()
@@ -221,6 +226,8 @@ public class Statistics
     {
         Statistics.iterations++;
         Statistics.currentSolution = new LSQ(solution);
+        currentGenerations = numGenerations;
+        totalGenerations += numGenerations;
         Statistics.solutionHistory.add(solution);
         if(Double.compare(solution.getFitness(), 2.0) == 0)
             Statistics.timesSolutionFound++;
@@ -238,23 +245,38 @@ public class Statistics
         if(numGenerations > maxGenerations)
             Statistics.maxGenerations = numGenerations;
         //update averages
-        int totalFitness = 0;
-        int totalGenerations = 0;
+        double totalFitness = 0.0;
         for(LSQ lsq: solutionHistory)
         {
             totalFitness += lsq.getFitness();
-            totalGenerations += numGenerations;
         }
-        Statistics.avgFitness = totalFitness / (double) Statistics.iterations;
-        Statistics.avgGenerations = totalGenerations / Statistics.iterations;
+        Statistics.avgFitness = totalFitness / (double) Statistics.solutionHistory.size();
+        Statistics.avgGenerations = (int) ((double) totalGenerations / (double) Statistics.solutionHistory.size());
 
         //calculate standard deviation
         double totalDeviation = 0.0;
         for(LSQ lsq: solutionHistory)
         {
-            totalDeviation += Math.sqrt(lsq.getFitness() - avgFitness);
+            totalDeviation += Math.sqrt(Math.abs(lsq.getFitness() - avgFitness));
         }
         stdDev = Math.sqrt(totalDeviation / (double) iterations);
     }
 
+    public static String statsAsString()
+    {
+        DecimalFormat df = new DecimalFormat("0.##");
+        return "CURRENT SOLUTION: "
+                + "\n\tFitness: " + df.format(currentSolution.getFitness())
+                + "\n\tNumber of Generations: " + currentGenerations
+                + "\n\nAGGREGATE DATA:"
+                + "\n\tIterations: " + iterations
+                + "\n\tMinimum Fitness " + df.format(minFitness)
+                + "\n\tMaximum Fitness " + df.format(maxFitness)
+                + "\n\tAverage Fitness " + df.format(avgFitness)
+                + "\n\tFitness Standard Deviation: " + stdDev
+                + "\n\tMinimum Number of Generations " + minGenerations
+                + "\n\tMaximum Number of Generations " + maxGenerations
+                + "\n\tAverage Number of Generations " + avgGenerations
+                ;
+    }
 }

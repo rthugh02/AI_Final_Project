@@ -1,0 +1,9 @@
+NAME: lsq10
+TYPE: LSQ
+COMMENT: latin square test file
+COMMENT: position data = {ASCII value} {column position} {row position}
+DIMENSION: 10
+START_CHARACTER: 65
+PARTIAL_COMPLETION: 8
+PARTIAL_COMPLETION_POSITIONING
+1 67 4 9
