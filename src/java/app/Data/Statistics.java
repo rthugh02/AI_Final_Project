@@ -22,7 +22,8 @@ public class Statistics
     private static int minConflicts;
     private static int maxConflicts;
     private static int avgConflicts;
-    private static double stdDev;
+    private static double stdDevFitness;
+    private static double stdDevConflicts;
     private static LSQ aggregateBestSolution;
     private static ArrayList<LSQ> solutionHistory;
     private static int totalGenerations;
@@ -56,7 +57,8 @@ public class Statistics
         maxConflicts = 0;
         minConflicts = 0;
         avgConflicts = 0;
-        stdDev = 0.0;
+        stdDevFitness = 0.0;
+        stdDevConflicts = 0.0;
         currentSolution = null;
         currentGenerations = 0;
         aggregateBestSolution = null;
@@ -145,14 +147,14 @@ public class Statistics
         Statistics.avgFitness = avgFitness;
     }
 
-    public static double getStdDev()
+    public static double getStdDevFitness()
     {
-        return stdDev;
+        return stdDevFitness;
     }
 
-    public static void setStdDev(double stdDev)
+    public static void setStdDevFitness(double stdDevFitness)
     {
-        Statistics.stdDev = stdDev;
+        Statistics.stdDevFitness = stdDevFitness;
     }
 
     public static LSQ getCurrentSolution()
@@ -267,17 +269,20 @@ public class Statistics
         Statistics.avgConflicts = (int) (totalConflicts / (double) Statistics.solutionHistory.size());
 
         //calculate standard deviation
-        double totalDeviation = 0.0;
+        double totalDeviationFitness = 0.0;
+        double totalDeviationConflicts = 0.0;
         for(LSQ lsq: solutionHistory)
         {
-            totalDeviation += Math.sqrt(Math.abs(lsq.getFitness() - avgFitness));
+            totalDeviationFitness += Math.sqrt(Math.abs(lsq.getFitness() - avgFitness));
+            totalDeviationConflicts += Math.sqrt(Math.abs(lsq.getNumConflicts() - avgConflicts));
         }
-        stdDev = Math.sqrt(totalDeviation / (double) iterations);
+        stdDevFitness = Math.sqrt(totalDeviationFitness / (double) Statistics.solutionHistory.size());
+        stdDevConflicts = Math.sqrt(totalDeviationConflicts / (double) Statistics.solutionHistory.size());
     }
 
     public static String statsAsString()
     {
-        DecimalFormat df = new DecimalFormat("0.##");
+        DecimalFormat df = new DecimalFormat("0.####");
         return "CURRENT SOLUTION: "
                 + "\n\tTotal Number of Conflicts: " + currentSolution.getNumConflicts()
                 + "\n\tFitness: " + df.format(currentSolution.getFitness())
@@ -287,10 +292,11 @@ public class Statistics
                 + "\n\tMinimum Number of Conflicts: " + minConflicts
                 + "\n\tMaximum Number of Conflicts: " + maxConflicts
                 + "\n\tAverage Number of Conflicts: " + avgConflicts
+                + "\n\tConflicts Standard Deviation: " + df.format(stdDevConflicts)
                 + "\n\tMinimum Fitness " + df.format(minFitness)
                 + "\n\tMaximum Fitness " + df.format(maxFitness)
                 + "\n\tAverage Fitness " + df.format(avgFitness)
-                + "\n\tFitness Standard Deviation: " + stdDev
+                + "\n\tFitness Standard Deviation: " + df.format(stdDevFitness)
                 + "\n\tMinimum Number of Generations " + minGenerations
                 + "\n\tMaximum Number of Generations " + maxGenerations
                 + "\n\tAverage Number of Generations " + avgGenerations
