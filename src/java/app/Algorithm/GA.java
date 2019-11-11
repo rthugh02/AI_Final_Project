@@ -1,14 +1,8 @@
 package app.Algorithm;
 
-import app.Data.LSQ;
-import app.Data.Population;
-import app.Data.Statistics;
-import app.Data.Symbol;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Random;
+import app.Data.*;
+
+import java.util.*;
 
 public class GA
 {
@@ -73,7 +67,7 @@ public class GA
             ArrayList<LSQ> children = new ArrayList<>();
             for(int i = 0; i < parents.size() - 2; i++)
             {
-                children.addAll(altCrossover(parents.get(i), parents.get(i+1)));
+                children.addAll(crossoverRandomColumns(parents.get(i), parents.get(i+1)));
             }
 
             //4a. adding the elite to the next generation
@@ -255,27 +249,29 @@ public class GA
    		return mutated;
     }
 
-    private static ArrayList<LSQ> altCrossover(LSQ parent1, LSQ parent2)
+    //select random number of columns, select them at random and pass on to child
+    //, try to fill empty cells with opposite parent
+    private static ArrayList<LSQ> crossoverRandomColumns(LSQ parent1, LSQ parent2)
     {
         Random rand = new Random();
         int dim = parent1.getDimension();
         int numCols = rand.nextInt(dim);
-        int numRows = rand.nextInt(dim);
         LSQ child1 = new LSQ(parent1);
         LSQ child2 = new LSQ(parent1);
         child1.emptyTable();
         child2.emptyTable();
         ArrayList<Integer> remainingCols = new ArrayList<>();
-        ArrayList<Integer> remainingRows = new ArrayList<>();
         for(int x = 0; x < dim; x++)
         {
             remainingCols.add(x);
-            remainingRows.add(x);
         }
 
+        //add random number of columns
         for(int x = 0; x < numCols; x++)
         {
+            //select random column from remaining columns
             int colIndex = remainingCols.remove(rand.nextInt(remainingCols.size()));
+
             for(int i = 0; i < dim; i++)
             {
                 //copy values of parent1 column to child1
@@ -288,20 +284,6 @@ public class GA
             }
         }
 
-        for(int x = 0; x < numRows; x++)
-        {
-            int rowIndex = remainingRows.remove(rand.nextInt(remainingRows.size()));
-            for(int i = 0; i < dim; i++)
-            {
-                //copy values of parent1 row to child1
-                if(!parent1.getSymbol(i, rowIndex).isLocked())
-                    child1.setSymbol(new Symbol(parent1.getSymbol(i, rowIndex)), i, rowIndex);
-
-                //copy values of parent2 row to child2
-                if(!parent2.getSymbol(i, rowIndex).isLocked())
-                    child2.setSymbol(new Symbol(parent2.getSymbol(i, rowIndex)), i, rowIndex);
-            }
-        }
 
         HashMap<Character, Integer> charPool1 = child1.getCharacterPool();
         HashMap<Character, Integer> charPool2 = child2.getCharacterPool();
@@ -333,18 +315,9 @@ public class GA
             }
         }
 
+        //fill any remaining empty cells at random with available characters
         child1.fillEmptyCells();
         child2.fillEmptyCells();
-
-        //###########DEBUG CODE#####################
-        /*//see how consistently superior children are created
-        if(child1.getNumConflicts() < parent1.getNumConflicts() || child1.getNumConflicts() < parent2.getNumConflicts()
-        || child2.getNumConflicts() < parent1.getNumConflicts() || child2.getNumConflicts() < parent2.getNumConflicts())
-            System.out.println("Superior Child Created");
-        else
-            System.out.println("Inferior Children");*/
-        //################################
-
 
         //return the new children
         ArrayList<LSQ> children = new ArrayList<>();
