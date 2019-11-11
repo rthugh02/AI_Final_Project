@@ -19,8 +19,7 @@ public class Statistics
     private static double maxFitness;
     private static double avgFitness;
     private static double stdDev;
-    //best solution of all trials
-    private static LSQ bestSolution;
+    private static LSQ aggregateBestSolution;
     //########################################################################
 
     //##########data for the current run##############
@@ -51,7 +50,7 @@ public class Statistics
         avgFitness = 0.0;
         stdDev = 0.0;
         currentSolution = null;
-        bestSolution = null;
+        aggregateBestSolution = null;
         solutionProgression = new ArrayList<>();
     }
 
@@ -150,14 +149,14 @@ public class Statistics
         Statistics.currentSolution = new LSQ(lsq);
     }
 
-    public static LSQ getBestSolution()
+    public static LSQ getAggregateBestSolution()
     {
-        return bestSolution;
+        return aggregateBestSolution;
     }
 
-    public static void setBestSolution(LSQ lsq)
+    public static void setAggregateBestSolution(LSQ lsq)
     {
-        Statistics.bestSolution = new LSQ(lsq);
+        Statistics.aggregateBestSolution = new LSQ(lsq);
     }
 
     public static ArrayList<LSQ> getSolutionProgression()
@@ -225,7 +224,7 @@ public class Statistics
         if(solution.getFitness() < minFitness)
         {
             Statistics.minFitness = solution.getFitness();
-            bestSolution = new LSQ(solution);
+            aggregateBestSolution = new LSQ(solution);
         }
         if(solution.getFitness() > maxFitness)
             Statistics.maxFitness = solution.getFitness();

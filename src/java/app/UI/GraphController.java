@@ -40,7 +40,7 @@ public class GraphController
             series.setName("GA");
 
         //iterate through solution progression at 10 generation intervals, adding current fitness as data point
-        for(int i = 0; i < Statistics.getSolutionProgression().size(); i+=10)
+        for(int i = 0; i < Statistics.getSolutionProgression().size(); i++)
         {
             LSQ lsq = Statistics.getSolutionProgression().get(i);
             series.getData().add(new XYChart.Data<>(i, lsq.getFitness()));

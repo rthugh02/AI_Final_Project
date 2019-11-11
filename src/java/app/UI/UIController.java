@@ -2,7 +2,6 @@ package app.UI;
 
 import app.Algorithm.GA;
 import app.Algorithm.GASettings;
-import app.Algorithm.WOC;
 import app.Data.*;
 import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
@@ -10,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -24,7 +24,7 @@ import java.util.Optional;
 public class UIController
 {
     @FXML
-    private GridPane grid;
+    private AnchorPane anchorPane;
     @FXML
     private TextField tfPopSize;
     @FXML
@@ -66,7 +66,7 @@ public class UIController
         {
             lsq = ReadLSQFile.createLSQFromFile(opFile.get());
             drawGrid(lsq);
-            Stage stage = (Stage) grid.getScene().getWindow();
+            Stage stage = (Stage) anchorPane.getScene().getWindow();
             stage.setTitle("Latin Square Solver - " + opFile.get().getName());
         }
     }
@@ -79,32 +79,32 @@ public class UIController
             for(int x = 0; x < GASettings.getNumTrials(); x++)
             {
                 Population population = new Population(lsq, GASettings.getPopSize());
-                population = GA.calcGeneticSolution(population);
-                if(GASettings.isWisdomOfCrowds())
-                {
-                    System.out.println(WOC.getWOCSolution(population));
-                }
+                GA.calcGeneticSolution(population);
             }
+            System.out.println("finished GA");
             drawGAProgression();
          }
     }
 
     public void onClickDrawBest()
     {
-        if(Statistics.getBestSolution() != null)
-            drawGrid(Statistics.getBestSolution());
+        if(Statistics.getAggregateBestSolution() != null)
+            drawGrid(Statistics.getAggregateBestSolution());
+    }
+
+    private void clearGrid()
+    {
+        while(anchorPane.getChildren().size() > 0)
+        {
+            anchorPane.getChildren().remove(0);
+        }
     }
 
     //initializes grid for n x n square
-    private void drawGrid(LSQ lsq)
+    private GridPane drawGrid(LSQ lsqToDraw)
     {
-        int n = lsq.getDimension();
-        //remove any current column and row constraints
-        while(grid.getColumnConstraints().size() > 0)
-            grid.getColumnConstraints().remove(0);
-        while(grid.getRowConstraints().size() > 0)
-            grid.getRowConstraints().remove(0);
-
+        GridPane grid = new GridPane();
+        int n = lsqToDraw.getDimension();
         //add new constraints to grid
         for(int i = 0; i < n; i++)
         {
@@ -134,7 +134,7 @@ public class UIController
                 Pane cell = new Pane();
                 cell.getStyleClass().add("cell");
                 grid.add(cell, i, j, 1, 1);
-                Symbol symbol = lsq.getSymbol(i, j);
+                Symbol symbol = lsqToDraw.getSymbol(i, j);
                 Label lblSymbol = new Label(Character.toString(symbol.getCharacter()));
                 if(!symbol.isLocked())
                     lblSymbol.getStyleClass().add("symbol");
@@ -143,20 +143,29 @@ public class UIController
                 grid.add(lblSymbol, i, j, 1, 1);
             }
         }
+        anchorPane.getChildren().add(grid);
+        AnchorPane.setBottomAnchor(grid, 0.0);
+        AnchorPane.setTopAnchor(grid, 0.0);
+        AnchorPane.setLeftAnchor(grid, 0.0);
+        AnchorPane.setRightAnchor(grid, 0.0);
+        return grid;
     }
 
     private void drawGAProgression()
     {
+        clearGrid();
         FadeTransition ft;
         SequentialTransition st = new SequentialTransition();
+        GridPane ftGrid;
         for(int i = 1; i < Statistics.getSolutionProgression().size();i++)
         {
             //don't redraw identical solutions
             if(!Statistics.getSolutionProgression().get(i-1).equals(Statistics.getSolutionProgression().get(i)))
             {
-                drawGrid(Statistics.getSolutionProgression().get(i));
+                ftGrid = drawGrid(Statistics.getSolutionProgression().get(i));
+                System.out.println(Statistics.getSolutionProgression().get(i).toString());
                 //set up instant fade in transition and add to sequential transition
-                ft = new FadeTransition(Duration.millis(0.1), grid);
+                ft = new FadeTransition(Duration.millis(.1), ftGrid);
                 ft.setFromValue(0.0);
                 ft.setToValue(100.0);
                 ft.setDelay(Duration.millis(0.1));
@@ -165,10 +174,10 @@ public class UIController
                 if(i != Statistics.getSolutionProgression().size() - 1)
                 {
                     //set up delayed instant fade out transition and add to sequential transition
-                    ft = new FadeTransition(Duration.millis(0.1), grid);
+                    ft = new FadeTransition(Duration.millis(0.1), ftGrid);
                     ft.setFromValue(100.0);
                     ft.setToValue(0.0);
-                    ft.setDelay(Duration.millis(100));
+                    ft.setDelay(Duration.millis(500));
                     st.getChildren().add(ft);
                 }
             }
@@ -292,7 +301,7 @@ public class UIController
         try
         {
             Stage graphWindow = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("../../fxml/graph.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/fxml/graph.fxml"));
             graphWindow.setTitle("Graph");
             graphWindow.setScene(new Scene(root, 800, 600));
             graphWindow.show();

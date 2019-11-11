@@ -4,7 +4,6 @@ import app.Data.LSQ;
 import app.Data.Population;
 import app.Data.Statistics;
 import app.Data.Symbol;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,76 +39,85 @@ public class GA
         workingPopulation = population; 
         int numGenerations = 0; 
         bestSolution = population.getPopulationMembersSorted().get(0);
-          while(noFitnessChanges != 1000 && bestSolution.getFitness() != 2)
-          {
-              //1. apply mutation operator to population
-              Random rand = new Random();
-              double mutationChance = GASettings.getMutationChance();
-              Iterator<LSQ> it = workingPopulation.getPopulationMembers().iterator();
-              ArrayList<LSQ> mutatedMembers = new ArrayList<>();
-              while(it.hasNext())
+        while(noFitnessChanges != 1000 && bestSolution.getFitness() != 2)
+        {
+            //1. apply mutation operator to population
+            Random rand = new Random();
+            double mutationChance = GASettings.getMutationChance();
+            Population prevPopCopy = new Population(workingPopulation);
+            Iterator<LSQ> it = workingPopulation.getPopulationMembers().iterator();
+            ArrayList<LSQ> mutatedMembers = new ArrayList<>();
+            while(it.hasNext())
+            {
+              LSQ solution = it.next();
+              double randomVal = rand.nextDouble();
+              if(randomVal <= mutationChance)
               {
-                LSQ solution = it.next();
-                double randomVal = rand.nextDouble();
-                if(randomVal <= mutationChance)
-                {
-                    LSQ mutatedSolution = mutation(solution);
-                    mutatedMembers.add(mutatedSolution);
-                    it.remove();
-                }
+                  LSQ mutatedSolution = mutation(solution);
+                  mutatedMembers.add(mutatedSolution);
+                  it.remove();
               }
-              workingPopulation.addMembers(mutatedMembers);
+            }
+            workingPopulation.addMembers(mutatedMembers);
 
-              //2. Tournament Selection
-              int selectionAmount = GASettings.getTourneySelectionNumber();
-              ArrayList<LSQ> parents = new ArrayList<>();
+            //2. Tournament Selection
+            int selectionAmount = GASettings.getTourneySelectionNumber();
+            ArrayList<LSQ> parents = new ArrayList<>();
 
-              //number of parents will be 20% of total population size
-              for(int i = 0; i < (int)(workingPopulation.getPopulationMembers().size() * 0.2); i++) 
+            //number of parents will be 20% of total population size
+            for(int i = 0; i < (int)(workingPopulation.getPopulationMembers().size() * 0.2); i++)
+            {
+                parents.add(selectByTournament(workingPopulation, selectionAmount));
+            }
+
+            //3. Crossover operations
+            ArrayList<LSQ> children = new ArrayList<>();
+            for(int i = 0; i < parents.size() - 2; i++)
+            {
+                children.addAll(crossover(parents.get(i), parents.get(i+1)));
+            }
+
+            //4a. adding the elite to the next generation
+            int elitism = GASettings.getElitism();
+            ArrayList<LSQ> sortedMembers = workingPopulation.getPopulationMembersSorted();
+            ArrayList<LSQ> nextGeneration = new ArrayList<>();
+            for(int i = 0; i < elitism; i++)
+            {
+                nextGeneration.add(sortedMembers.remove(0));
+            }
+
+            //add woc and make room for one more child if woc is enabled
+            int wocNum = 0;
+            if(GASettings.isWisdomOfCrowds())
+            {
+                nextGeneration.add(WOC.getWOCSolution(prevPopCopy));
+                wocNum = 1;
+            }
+
+            //4b. adding children into population and evaluating
+            sortedMembers.addAll(children);
+            Collections.sort(sortedMembers);
+            int populationSize = GASettings.getPopSize();
+            for(int i = 0; i < populationSize - elitism - wocNum; i++)
+            {
+                nextGeneration.add(sortedMembers.get(i));
+            }
+
+            Collections.sort(nextGeneration);
+            workingPopulation = new Population(nextGeneration);
+            numGenerations++;
+            LSQ topMember = nextGeneration.get(0);
+
+            if(Double.compare(topMember.getFitness(), bestSolution.getFitness()) > 0)
               {
-                  parents.add(selectByTournament(workingPopulation, selectionAmount));
+                  bestSolution = topMember;
+                  noFitnessChanges = 0;
               }
-
-              //3. Crossover operations
-              ArrayList<LSQ> children = new ArrayList<>();
-              for(int i = 0; i < parents.size() - 2; i++)
-              {
-                  children.addAll(crossover(parents.get(i), parents.get(i+1)));
-              }
-
-              //4a. adding the elite to the next generation
-              int elitism = GASettings.getElitism();
-              ArrayList<LSQ> sortedMembers = workingPopulation.getPopulationMembersSorted();
-              ArrayList<LSQ> nextGeneration = new ArrayList<>();
-              for(int i = 0; i < elitism; i++) 
-              {
-                  nextGeneration.add(sortedMembers.get(i));
-                  sortedMembers.remove(i);
-              }
-
-              //4b. adding children into population and evaluating
-              sortedMembers.addAll(children);
-              Collections.sort(sortedMembers);
-              int populationSize = GASettings.getPopSize();
-              for(int i = 0; i < populationSize - elitism; i++)
-              {
-                  nextGeneration.add(sortedMembers.get(i));
-              }
-              Collections.sort(nextGeneration);
-              workingPopulation = new Population(nextGeneration);
-              numGenerations++;
-              LSQ topMember = nextGeneration.get(0);
-              
-              if(Double.compare(topMember.getFitness(), bestSolution.getFitness()) > 0)
-                {
-                    bestSolution = topMember;
-                    noFitnessChanges = 0;
-                }
-              else if(Double.compare(topMember.getFitness(), bestSolution.getFitness() ) == 0)
-                noFitnessChanges++;
-              Statistics.updateAggregateData(topMember, numGenerations);
-          }
-          return workingPopulation;  
+            else if(Double.compare(topMember.getFitness(), bestSolution.getFitness() ) == 0)
+              noFitnessChanges++;
+            Statistics.updateAggregateData(topMember, numGenerations);
+        }
+        return workingPopulation;
     }
 
     //crossover that passes on each parent's best(least conflicts) row and column to separate children

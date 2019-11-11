@@ -11,7 +11,7 @@ public class Main extends Application
     @Override
     public void start(Stage primaryStage) throws Exception
     {
-        Parent root = FXMLLoader.load(getClass().getResource("../resources/fxml/ui.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/ui.fxml"));
         primaryStage.setTitle("Latin Square Solver");
         Scene scene = new Scene(root, 1024, 768);
         scene.getStylesheets().add("/css/ui.css");

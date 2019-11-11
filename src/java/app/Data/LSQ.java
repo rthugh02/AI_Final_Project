@@ -203,7 +203,7 @@ public class LSQ implements Comparable<LSQ>
         }
 
         if(repetitions != 0)
-            this.fitness = (double)1/repetitions;
+            this.fitness = ( 1.0 / (double)repetitions);
         else
             this.fitness = 2.0;
     }

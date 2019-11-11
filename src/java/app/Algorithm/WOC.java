@@ -119,12 +119,17 @@ public class WOC
             //..symbol and can be sorted into a new position
             else
             {
-                cellAgreement.removeMostAgreedCharacter();
-                cellAgreements.add(new CellAgreement(cellAgreement));
-                Collections.sort(cellAgreements);
-                Collections.reverse(cellAgreements);
+                if(cellAgreement.getAgreementCounts().size() > 1)
+                {
+                    cellAgreement.removeMostAgreedCharacter();
+                    cellAgreements.add(new CellAgreement(cellAgreement));
+                    Collections.sort(cellAgreements);
+                    Collections.reverse(cellAgreements);
+                }
             }
         }
-        wocSolution.calcFitness();
+        //try to fill any empty cells
+        wocSolution.fillEmptyCells();
+
     }
 }
