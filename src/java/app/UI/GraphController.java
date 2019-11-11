@@ -40,11 +40,20 @@ public class GraphController
             series.setName("GA");
 
         int incrementAmount = (int)((double)Statistics.getSolutionProgression().size() / 15.0);
-        //iterate through solution progression at 10 generation intervals, adding current fitness as data point
+        //iterate through solution progression at 10 generation intervals, adding number of conflicts as data point
         for(int i = 0; i < Statistics.getSolutionProgression().size(); i+=incrementAmount)
         {
             LSQ lsq = Statistics.getSolutionProgression().get(i);
             series.getData().add(new XYChart.Data<>(i, lsq.getNumConflicts()));
+
+            //set up incrementAmount so that it will add the very last solution
+            if(i+incrementAmount >= Statistics.getSolutionProgression().size())
+            {
+                incrementAmount = Statistics.getSolutionProgression().size() - i - 1;
+                if(incrementAmount == 0)
+                    incrementAmount = 1;
+            }
+
         }
         //add series to linechart
         lineChart.getData().add(series);

@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class WOC
 {
     private static ArrayList<LSQ> bestSolutions;
-    private static HashMap<Character, Integer> characterPool;
+    private static ArrayList<Character> characterPool;
     private static ArrayList<CellAgreement> cellAgreements;
     private static LSQ wocSolution;
 
@@ -104,12 +104,9 @@ public class WOC
             CellAgreement cellAgreement = cellAgreements.remove(0);
             Character character = cellAgreement.getMostAgreedSymbol().getCharacter();
             //if the character is available assign to solution and decrement characterPool
-            if(characterPool.containsKey(character))
+            if(characterPool.contains(character))
             {
-                if(characterPool.get(character) > 1)
-                    characterPool.put(character, characterPool.get(character) - 1);
-                else
-                    characterPool.remove(character);
+                characterPool.remove(character);
 
                 wocSolution.setSymbol(new Symbol(cellAgreement.getMostAgreedSymbol()),
                         cellAgreement.getColumn(), cellAgreement.getRow());

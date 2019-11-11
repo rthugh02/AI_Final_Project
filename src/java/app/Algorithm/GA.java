@@ -13,8 +13,7 @@ public class GA
     //Best solution will be added to Statistics.SolutionProgression for each generation
     public static Population calcGeneticSolution(Population population)
     {
-        /*
-            GA Algorithm set up:
+           /* GA Algorithm set up:
             
             while(!termination_condition)
             {
@@ -24,15 +23,16 @@ public class GA
                 - Perform crossover operation between parents
                 - integrate children into population
                 - kill off weakest solutions
-            }
-        */
+            }*/
+
+
         Statistics.resetProgression();
         workingPopulation = population;
         noFitnessChanges = 0;
         int numGenerations = 0; 
         bestSolution = population.getPopulationMembersSorted().get(0);
         System.out.println("Begin GA");
-        while(noFitnessChanges != 100 && bestSolution.getFitness() != 2)
+        while(noFitnessChanges != 100 && bestSolution.getFitness() != 2 && numGenerations < 1000)
         {
             //1. apply mutation operator to population
             Random rand = new Random();
@@ -117,80 +117,6 @@ public class GA
         return workingPopulation;
     }
 
-    //crossover that passes on each parent's best(least conflicts) row and column to separate children
-    //..and fills the remaining cells with as many of the opposite parent's corresponding cells as possible
-    private static ArrayList<LSQ> crossover(LSQ parent1, LSQ parent2)
-    {
-        ArrayList<LSQ> children = new ArrayList<>();
-        LSQ child1 = new LSQ(parent1);
-        LSQ child2 = new LSQ(parent1);
-        child1.emptyTable();
-        child2.emptyTable();
-
-        int p1Col = parent1.getLowestColumn();
-        int p1Row = parent1.getLowestRow();
-        int p2Col = parent2.getLowestColumn();
-        int p2Row = parent2.getLowestRow();
-
-        //i is index that can represent col or row
-        for(int i = 0; i < parent1.getDimension(); i++)
-        {
-            //copy values of parent1's best row to child1
-            if(!parent1.getSymbol(i, p1Row).isLocked())
-                child1.setSymbol(new Symbol(parent1.getSymbol(i, p1Row)), i, p1Row);
-
-            //copy values of parent2's best row to child2
-            if(!parent2.getSymbol(i, p2Row).isLocked())
-                child2.setSymbol(new Symbol(parent2.getSymbol(i, p2Row)), i, p2Row);
-
-            //copy values of parent1's best col to child1
-            if(!parent1.getSymbol(p1Col, i).isLocked())
-                child1.setSymbol(new Symbol(parent1.getSymbol(p1Col, i)), p1Col, i);
-
-            //copy values of parent2's best col to child2
-            if(!parent2.getSymbol(p2Col, i).isLocked())
-                child2.setSymbol(new Symbol(parent2.getSymbol(p2Col, i)), p2Col, i);
-        }
-
-        HashMap<Character, Integer> charPool1 = child1.getCharacterPool();
-        HashMap<Character, Integer> charPool2 = child2.getCharacterPool();
-        //try to fill empty cells with opposite parent if possible
-        for(int i = 0; i < parent1.getDimension(); i++)
-        {
-            for(int j = 0; j < parent1.getDimension(); j++)
-            {
-                //for empty cell, if symbol in opposite parent's cell is available, assign it
-                if(child1.getSymbol(i, j) == null && charPool1.containsKey(parent2.getSymbol(i, j).getCharacter()))
-                {
-                    child1.setSymbol(new Symbol(parent2.getSymbol(i, j)), i, j);
-                    if(charPool1.get(parent2.getSymbol(i, j).getCharacter()) > 1)
-                        {charPool1.put(parent2.getSymbol(i, j).getCharacter(),
-                                charPool1.get(parent2.getSymbol(i, j).getCharacter()) - 1);}
-                    else
-                        charPool1.remove(parent2.getSymbol(i, j).getCharacter());
-                }
-                //same for other child
-                if(child2.getSymbol(i, j) == null && charPool2.containsKey(parent1.getSymbol(i, j).getCharacter()))
-                {
-                    child2.setSymbol(new Symbol(parent1.getSymbol(i, j)), i, j);
-                    if(charPool2.get(parent1.getSymbol(i, j).getCharacter()) > 1)
-                       {charPool2.put(parent1.getSymbol(i, j).getCharacter(),
-                                charPool2.get(parent1.getSymbol(i, j).getCharacter()) - 1);}
-                    else
-                        charPool2.remove(parent1.getSymbol(i, j).getCharacter());
-                }
-            }
-        }
-
-        child1.fillEmptyCells();
-        child2.fillEmptyCells();
-
-        //return the new children
-        children.add(child1);
-        children.add(child2);
-        return children;
-    }
-
     private static LSQ selectByTournament(Population population, int selectionAmount) 
     {
         Random rand = new Random();
@@ -244,15 +170,19 @@ public class GA
     		mutated.setSymbol(new Symbol(original.getSymbol(symb2col, symb2row)), symb1col, symb1row);
     		
     		//next replaces the second symbol with the first symbol
-    		mutated.setSymbol(new Symbol(original.getSymbol(symb1col, symb2row)), symb2col, symb2row);
+    		mutated.setSymbol(new Symbol(original.getSymbol(symb1col, symb1row)), symb2col, symb2row);
 
+    		if(!mutated.validateTable())
+    		    System.out.println("invalid mutation");
    		return mutated;
     }
 
     //select random number of columns, select them at random and pass on to child
     //, try to fill empty cells with opposite parent
-    private static ArrayList<LSQ> crossoverRandomColumns(LSQ parent1, LSQ parent2)
+private static ArrayList<LSQ> crossoverRandomColumns(LSQ parent1, LSQ parent2)
     {
+        if(!parent1.validateTable())
+            System.out.println("Invalid parent for crossover");
         Random rand = new Random();
         int dim = parent1.getDimension();
         int numCols = rand.nextInt(dim);
@@ -260,6 +190,8 @@ public class GA
         LSQ child2 = new LSQ(parent1);
         child1.emptyTable();
         child2.emptyTable();
+        ArrayList<Character> charPool1 = child1.getCharacterPool();
+        ArrayList<Character> charPool2 = child2.getCharacterPool();
         ArrayList<Integer> remainingCols = new ArrayList<>();
         for(int x = 0; x < dim; x++)
         {
@@ -271,46 +203,44 @@ public class GA
         {
             //select random column from remaining columns
             int colIndex = remainingCols.remove(rand.nextInt(remainingCols.size()));
-
             for(int i = 0; i < dim; i++)
             {
+                Symbol p1Symbol = parent1.getSymbol(colIndex, i);
                 //copy values of parent1 column to child1
-                if(!parent1.getSymbol(colIndex, i).isLocked())
-                    child1.setSymbol(new Symbol(parent1.getSymbol(colIndex, i)), colIndex, i);
+                if(!p1Symbol.isLocked() && charPool1.contains(p1Symbol.getCharacter()))
+                {
+                    child1.setSymbol(new Symbol(p1Symbol), colIndex, i);
+                    charPool1.remove(p1Symbol.getCharacter());
+                }
 
+                Symbol p2Symbol = parent2.getSymbol(colIndex, i);
                 //copy values of parent2 column to child2
-                if(!parent2.getSymbol(colIndex, i).isLocked())
-                    child2.setSymbol(new Symbol(parent2.getSymbol(colIndex, i)), colIndex, i);
+                if(!p2Symbol.isLocked() && charPool2.contains(p2Symbol.getCharacter()))
+                {
+                    child1.setSymbol(new Symbol(p2Symbol), colIndex, i);
+                    charPool2.remove(p2Symbol.getCharacter());
+                }
             }
         }
 
-
-        HashMap<Character, Integer> charPool1 = child1.getCharacterPool();
-        HashMap<Character, Integer> charPool2 = child2.getCharacterPool();
         //try to fill empty cells with opposite parent if possible
-        for(int i = 0; i < parent1.getDimension(); i++)
+        for(int i = 0; i < dim; i++)
         {
-            for(int j = 0; j < parent1.getDimension(); j++)
+            for(int j = 0; j < dim; j++)
             {
+                Symbol p2Symbol = parent2.getSymbol(i, j);
                 //for empty cell, if symbol in opposite parent's cell is available, assign it
-                if(child1.getSymbol(i, j) == null && charPool1.containsKey(parent2.getSymbol(i, j).getCharacter()))
+                if(!p2Symbol.isLocked() && charPool1.contains(p2Symbol.getCharacter()))
                 {
-                    child1.setSymbol(new Symbol(parent2.getSymbol(i, j)), i, j);
-                    if(charPool1.get(parent2.getSymbol(i, j).getCharacter()) > 1)
-                    {charPool1.put(parent2.getSymbol(i, j).getCharacter(),
-                            charPool1.get(parent2.getSymbol(i, j).getCharacter()) - 1);}
-                    else
-                        charPool1.remove(parent2.getSymbol(i, j).getCharacter());
+                    child1.setSymbol(new Symbol(p2Symbol), i, j);
+                    charPool1.remove(p2Symbol.getCharacter());
                 }
                 //same for other child
-                if(child2.getSymbol(i, j) == null && charPool2.containsKey(parent1.getSymbol(i, j).getCharacter()))
+                Symbol p1Symbol = parent1.getSymbol(i, j);
+                if(!p1Symbol.isLocked() && charPool1.contains(p1Symbol.getCharacter()))
                 {
-                    child2.setSymbol(new Symbol(parent1.getSymbol(i, j)), i, j);
-                    if(charPool2.get(parent1.getSymbol(i, j).getCharacter()) > 1)
-                    {charPool2.put(parent1.getSymbol(i, j).getCharacter(),
-                            charPool2.get(parent1.getSymbol(i, j).getCharacter()) - 1);}
-                    else
-                        charPool2.remove(parent1.getSymbol(i, j).getCharacter());
+                    child2.setSymbol(new Symbol(p1Symbol), i, j);
+                    charPool2.remove(p1Symbol.getCharacter());
                 }
             }
         }
@@ -319,11 +249,16 @@ public class GA
         child1.fillEmptyCells();
         child2.fillEmptyCells();
 
+        if(!child1.validateTable() || !child2.validateTable())
+        {
+            System.out.println("crossover created invalid child");
+        }
+
         //return the new children
         ArrayList<LSQ> children = new ArrayList<>();
         children.add(child1);
         children.add(child2);
         return children;
-
     }
+
 }

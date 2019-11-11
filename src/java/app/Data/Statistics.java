@@ -14,19 +14,21 @@ public class Statistics
     private static int iterations;
     private static int minGenerations;
     private static int maxGenerations;
-    private static int avgGenerations;
+    private static int totalGenerations;
+    private static double avgGenerations;
     private static int timesSolutionFound;
     private static double minFitness;
     private static double maxFitness;
+    private static double totalFitness; //for calculating avg
     private static double avgFitness;
     private static int minConflicts;
     private static int maxConflicts;
-    private static int avgConflicts;
+    private static int totalConflicts;
+    private static double avgConflicts;
     private static double stdDevFitness;
     private static double stdDevConflicts;
     private static LSQ aggregateBestSolution;
     private static ArrayList<LSQ> solutionHistory;
-    private static int totalGenerations;
     //########################################################################
 
     //##########data for the current run##############
@@ -47,16 +49,16 @@ public class Statistics
     public static void reset()
     {
         iterations = 0;
-        minGenerations = 0;
+        minGenerations = -1;
         maxGenerations = 0;
-        avgGenerations = 0;
+        avgGenerations = 0.0;
         timesSolutionFound = 0;
         minFitness = Double.POSITIVE_INFINITY;
         maxFitness = 0.0;
         avgFitness = 0.0;
         maxConflicts = 0;
-        minConflicts = 0;
-        avgConflicts = 0;
+        minConflicts = -1;
+        avgConflicts = 0.0;
         stdDevFitness = 0.0;
         stdDevConflicts = 0.0;
         currentSolution = null;
@@ -65,6 +67,8 @@ public class Statistics
         solutionProgression = new ArrayList<>();
         solutionHistory = new ArrayList<>();
         totalGenerations = 0;
+        totalConflicts = 0;
+        totalFitness = 0;
     }
 
     public static void resetProgression()
@@ -97,7 +101,7 @@ public class Statistics
         Statistics.maxGenerations = maxGenerations;
     }
 
-    public static int getAvgGenerations()
+    public static double getAvgGenerations()
     {
         return avgGenerations;
     }
@@ -248,25 +252,20 @@ public class Statistics
         }
         if(solution.getFitness() > maxFitness)
             Statistics.maxFitness = solution.getFitness();
-        if(numGenerations < minGenerations || minGenerations == 0)
+        if(numGenerations < minGenerations || minGenerations == -1)
             Statistics.minGenerations = numGenerations;
         if(numGenerations > maxGenerations)
             Statistics.maxGenerations = numGenerations;
-        if(solution.getNumConflicts() < minConflicts || minConflicts == 0)
+        if(solution.getNumConflicts() < minConflicts || minConflicts == -1)
             Statistics.minConflicts = solution.getNumConflicts();
         if(solution.getNumConflicts() > maxConflicts)
             Statistics.maxConflicts = solution.getNumConflicts();
         //update averages
-        double totalFitness = 0.0;
-        double totalConflicts = 0.0;
-        for(LSQ lsq: solutionHistory)
-        {
-            totalFitness += lsq.getFitness();
-            totalConflicts += lsq.getNumConflicts();
-        }
-        Statistics.avgFitness = totalFitness / (double) Statistics.solutionHistory.size();
-        Statistics.avgGenerations = (int) ((double) totalGenerations / (double) Statistics.solutionHistory.size());
-        Statistics.avgConflicts = (int) (totalConflicts / (double) Statistics.solutionHistory.size());
+        totalFitness += solution.getFitness();
+        totalConflicts += solution.getNumConflicts();
+        Statistics.avgFitness =  totalFitness / (double) iterations;
+        Statistics.avgGenerations = ((double) totalGenerations / (double) iterations);
+        Statistics.avgConflicts =  ( (double) totalConflicts / (double) iterations);
 
         //calculate standard deviation
         double totalDeviationFitness = 0.0;
@@ -276,8 +275,8 @@ public class Statistics
             totalDeviationFitness += Math.sqrt(Math.abs(lsq.getFitness() - avgFitness));
             totalDeviationConflicts += Math.sqrt(Math.abs(lsq.getNumConflicts() - avgConflicts));
         }
-        stdDevFitness = Math.sqrt(totalDeviationFitness / (double) Statistics.solutionHistory.size());
-        stdDevConflicts = Math.sqrt(totalDeviationConflicts / (double) Statistics.solutionHistory.size());
+        stdDevFitness = Math.sqrt(totalDeviationFitness / (double) iterations);
+        stdDevConflicts = Math.sqrt(totalDeviationConflicts / (double) iterations);
     }
 
     public static String statsAsString()

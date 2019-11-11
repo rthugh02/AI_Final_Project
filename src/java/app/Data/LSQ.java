@@ -95,35 +95,25 @@ public class LSQ implements Comparable<LSQ>
     //initialize the empty cells of a table with random characters
     public void fillEmptyCells()
     {
-        HashMap<Character, Integer> charPool = getCharacterPool();
+        ArrayList<Character> charPool = getCharacterPool();
 
         Random rand = new Random();
         //iterate through columns and rows of table and add random symbols
+        //create arraylist from charPool keys to pull by index
         for(int i = 0; i < dimension; i++)
         {
             for(int j = 0; j < dimension; j++)
             {
-                int poolIndex;
                 if(lsqTable[i][j] == null)
                 {
-                    //create arraylist from charPool keys to pull by index
-                    ArrayList<Character> charPoolList = new ArrayList<>(charPool.keySet());
-                    //select random index to pull
-                    poolIndex = rand.nextInt(charPoolList.size());
-                    //get random character and create new symbol
-                    char c = charPoolList.get(poolIndex);
+                    Collections.shuffle(charPool);
+                    char c = charPool.remove(0);
                     lsqTable[i][j] = new Symbol(c, false);
-
-                    //decrement currently selected character or remove if only one left
-                    if(charPool.get(c) > 1)
-                        charPool.put(c, charPool.get(c) - 1);
-                    else
-                    {
-                        charPool.remove(c);
-                    }
                 }
             }
         }
+        if(!this.validateTable())
+            System.out.println("invalid solution created by LSQ.fillEmptyCells()");
         calcFitness();
     }
 
@@ -229,10 +219,10 @@ public class LSQ implements Comparable<LSQ>
     }
 
     //get a pool of counts of remaining available characters to fill an incomplete solution
-    public HashMap<Character, Integer> getCharacterPool()
+    public ArrayList<Character> getCharacterPool()
     {
         //fill up character pool based on start char
-        HashMap<Character, Integer> characterPool = new HashMap<>();
+        /*HashMap<Character, Integer> characterPool = new HashMap<>();
         char c = startChar;
         for(int x = 0; x < dimension; x++)
         {
@@ -248,13 +238,30 @@ public class LSQ implements Comparable<LSQ>
                 if(lsqTable[i][j] != null)
                 {
                     Character character = lsqTable[i][j].getCharacter();
-                    if(characterPool.containsKey(character))
-                    {
-                        if(characterPool.get(character) > 1)
-                            characterPool.put(character, characterPool.get(character) - 1);
-                        else
-                            characterPool.remove(character);
-                    }
+
+                    //if(characterPool.get(character) >= 1)
+                        characterPool.put(character, characterPool.get(character) - 1);
+                }
+            }
+        }*/
+        ArrayList<Character> characterPool = new ArrayList<>();
+        char c = startChar;
+        for(int i = 0; i < dimension; i++)
+        {
+            for(int j = 0; j < dimension; j++)
+            {
+                characterPool.add(c);
+            }
+            c++;
+        }
+
+        for(int i = 0; i < dimension; i++)
+        {
+            for(int j = 0; j < dimension; j++)
+            {
+                if(lsqTable[i][j] != null)
+                {
+                    characterPool.remove((Character) lsqTable[i][j].getCharacter());
                 }
             }
         }
@@ -262,13 +269,11 @@ public class LSQ implements Comparable<LSQ>
         return characterPool;
     }
 
-    //if the cell is valid, an empty characterpool should be created from it
+
     public boolean validateTable()
     {
-        if(getCharacterPool().isEmpty())
-            return true;
-        else
-            return false;
+        ArrayList<Character> characterPool = getCharacterPool();
+        return characterPool.isEmpty();
     }
 
     @Override
