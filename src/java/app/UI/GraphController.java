@@ -11,13 +11,13 @@ import javafx.scene.control.MenuItem;
 public class GraphController
 {
     @FXML
-    private LineChart<Integer, Double> lineChart;
+    private LineChart<Integer, Integer> lineChart;
     @FXML
     private MenuItem miGraphA;
     @FXML
     private MenuItem miGraphB;
 
-    private XYChart.Series<Integer, Double> series;
+    private XYChart.Series<Integer, Integer> series;
 
     @FXML
     private void initialize()
@@ -39,11 +39,12 @@ public class GraphController
         else
             series.setName("GA");
 
+        int incrementAmount = (int)((double)Statistics.getSolutionProgression().size() / 15.0);
         //iterate through solution progression at 10 generation intervals, adding current fitness as data point
-        for(int i = 0; i < Statistics.getSolutionProgression().size(); i++)
+        for(int i = 0; i < Statistics.getSolutionProgression().size(); i+=incrementAmount)
         {
             LSQ lsq = Statistics.getSolutionProgression().get(i);
-            series.getData().add(new XYChart.Data<>(i, lsq.getFitness()));
+            series.getData().add(new XYChart.Data<>(i, lsq.getNumConflicts()));
         }
         //add series to linechart
         lineChart.getData().add(series);

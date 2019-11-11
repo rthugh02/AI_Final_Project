@@ -73,7 +73,7 @@ public class GA
             ArrayList<LSQ> children = new ArrayList<>();
             for(int i = 0; i < parents.size() - 2; i++)
             {
-                children.addAll(crossover(parents.get(i), parents.get(i+1)));
+                children.addAll(altCrossover(parents.get(i), parents.get(i+1)));
             }
 
             //4a. adding the elite to the next generation
@@ -219,7 +219,6 @@ public class GA
     
     private static LSQ mutation(LSQ original)
     {
-        System.out.println("Begin Mutation");
     	LSQ mutated = new LSQ(original);
     	int max = original.getDimension();		//uses the dimension to get the range for the random array slot
     	boolean symb1clear = false;		//booleans to make sure that both symbols are not locked
@@ -253,7 +252,105 @@ public class GA
     		//next replaces the second symbol with the first symbol
     		mutated.setSymbol(new Symbol(original.getSymbol(symb1col, symb2row)), symb2col, symb2row);
 
-        System.out.println("End Mutation");
    		return mutated;
+    }
+
+    private static ArrayList<LSQ> altCrossover(LSQ parent1, LSQ parent2)
+    {
+        Random rand = new Random();
+        int dim = parent1.getDimension();
+        int numCols = rand.nextInt(dim);
+        int numRows = rand.nextInt(dim);
+        LSQ child1 = new LSQ(parent1);
+        LSQ child2 = new LSQ(parent1);
+        child1.emptyTable();
+        child2.emptyTable();
+        ArrayList<Integer> remainingCols = new ArrayList<>();
+        ArrayList<Integer> remainingRows = new ArrayList<>();
+        for(int x = 0; x < dim; x++)
+        {
+            remainingCols.add(x);
+            remainingRows.add(x);
+        }
+
+        for(int x = 0; x < numCols; x++)
+        {
+            int colIndex = remainingCols.remove(rand.nextInt(remainingCols.size()));
+            for(int i = 0; i < dim; i++)
+            {
+                //copy values of parent1 column to child1
+                if(!parent1.getSymbol(colIndex, i).isLocked())
+                    child1.setSymbol(new Symbol(parent1.getSymbol(colIndex, i)), colIndex, i);
+
+                //copy values of parent2 column to child2
+                if(!parent2.getSymbol(colIndex, i).isLocked())
+                    child2.setSymbol(new Symbol(parent2.getSymbol(colIndex, i)), colIndex, i);
+            }
+        }
+
+        for(int x = 0; x < numRows; x++)
+        {
+            int rowIndex = remainingRows.remove(rand.nextInt(remainingRows.size()));
+            for(int i = 0; i < dim; i++)
+            {
+                //copy values of parent1 row to child1
+                if(!parent1.getSymbol(i, rowIndex).isLocked())
+                    child1.setSymbol(new Symbol(parent1.getSymbol(i, rowIndex)), i, rowIndex);
+
+                //copy values of parent2 row to child2
+                if(!parent2.getSymbol(i, rowIndex).isLocked())
+                    child2.setSymbol(new Symbol(parent2.getSymbol(i, rowIndex)), i, rowIndex);
+            }
+        }
+
+        HashMap<Character, Integer> charPool1 = child1.getCharacterPool();
+        HashMap<Character, Integer> charPool2 = child2.getCharacterPool();
+        //try to fill empty cells with opposite parent if possible
+        for(int i = 0; i < parent1.getDimension(); i++)
+        {
+            for(int j = 0; j < parent1.getDimension(); j++)
+            {
+                //for empty cell, if symbol in opposite parent's cell is available, assign it
+                if(child1.getSymbol(i, j) == null && charPool1.containsKey(parent2.getSymbol(i, j).getCharacter()))
+                {
+                    child1.setSymbol(new Symbol(parent2.getSymbol(i, j)), i, j);
+                    if(charPool1.get(parent2.getSymbol(i, j).getCharacter()) > 1)
+                    {charPool1.put(parent2.getSymbol(i, j).getCharacter(),
+                            charPool1.get(parent2.getSymbol(i, j).getCharacter()) - 1);}
+                    else
+                        charPool1.remove(parent2.getSymbol(i, j).getCharacter());
+                }
+                //same for other child
+                if(child2.getSymbol(i, j) == null && charPool2.containsKey(parent1.getSymbol(i, j).getCharacter()))
+                {
+                    child2.setSymbol(new Symbol(parent1.getSymbol(i, j)), i, j);
+                    if(charPool2.get(parent1.getSymbol(i, j).getCharacter()) > 1)
+                    {charPool2.put(parent1.getSymbol(i, j).getCharacter(),
+                            charPool2.get(parent1.getSymbol(i, j).getCharacter()) - 1);}
+                    else
+                        charPool2.remove(parent1.getSymbol(i, j).getCharacter());
+                }
+            }
+        }
+
+        child1.fillEmptyCells();
+        child2.fillEmptyCells();
+
+        //###########DEBUG CODE#####################
+        /*//see how consistently superior children are created
+        if(child1.getNumConflicts() < parent1.getNumConflicts() || child1.getNumConflicts() < parent2.getNumConflicts()
+        || child2.getNumConflicts() < parent1.getNumConflicts() || child2.getNumConflicts() < parent2.getNumConflicts())
+            System.out.println("Superior Child Created");
+        else
+            System.out.println("Inferior Children");*/
+        //################################
+
+
+        //return the new children
+        ArrayList<LSQ> children = new ArrayList<>();
+        children.add(child1);
+        children.add(child2);
+        return children;
+
     }
 }

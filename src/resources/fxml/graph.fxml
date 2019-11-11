@@ -37,7 +37,7 @@
           <NumberAxis animated="false" label="Generations" side="BOTTOM" />
         </xAxis>
         <yAxis>
-          <NumberAxis animated="false" label="Fitness" side="LEFT" />
+          <NumberAxis animated="false" label="Number of Conflicts" side="LEFT" />
         </yAxis>
       </LineChart>
    </children>

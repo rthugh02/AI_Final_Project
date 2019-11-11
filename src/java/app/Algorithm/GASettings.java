@@ -15,7 +15,7 @@ public class GASettings
     public static void setDefaults()
     {
         popSize = 200;
-        mutationChance = 0.002;
+        mutationChance = 0.1;
         wisdomOfCrowds = true;
         elitism = 2;
         tourneySelectionNumber = 3;

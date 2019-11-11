@@ -17,7 +17,6 @@ public class WOC
 
     public static LSQ getWOCSolution(Population population)
     {
-        System.out.println("Begin WOC");
         initBestSolutions(population);
         //create clone of one of the solutions
         wocSolution = new LSQ(population.getMember(0));
@@ -27,7 +26,6 @@ public class WOC
         characterPool = wocSolution.getCharacterPool();
         initCellAgreements();
         fillWOCSolution();
-        System.out.println("End WOC");
         return wocSolution;
     }
 

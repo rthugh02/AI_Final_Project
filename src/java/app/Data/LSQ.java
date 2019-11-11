@@ -11,7 +11,7 @@ public class LSQ implements Comparable<LSQ>
     //-1 indicates lowest row has not been determined, other values indicate index
     private int lowestRow = -1;
     private int lowestColumn = -1;
-
+    private int numConflicts = -1;
     private double fitness = -1;
 
     public LSQ(int dimension, Symbol[][] lsqTable, char startChar)
@@ -28,6 +28,7 @@ public class LSQ implements Comparable<LSQ>
         this.startChar = lsq.getStartChar();
         this.lowestColumn = lsq.getLowestColumn();
         this.lowestRow = lsq.getLowestRow();
+        this.numConflicts = lsq.getNumConflicts();
         this.fitness = lsq.getFitness();
 
         //copy array with newly instantiated Symbols
@@ -81,7 +82,12 @@ public class LSQ implements Comparable<LSQ>
         return lowestColumn == -1 ? null : lowestColumn;
     }
 
-    public double getFitness() 
+    public int getNumConflicts()
+    {
+        return numConflicts;
+    }
+
+    public double getFitness()
     {
         return fitness;
     }
@@ -202,6 +208,7 @@ public class LSQ implements Comparable<LSQ>
             }
         }
 
+        numConflicts = repetitions;
         if(repetitions != 0)
             this.fitness = ( 1.0 / (double)repetitions);
         else

@@ -19,6 +19,9 @@ public class Statistics
     private static double minFitness;
     private static double maxFitness;
     private static double avgFitness;
+    private static int minConflicts;
+    private static int maxConflicts;
+    private static int avgConflicts;
     private static double stdDev;
     private static LSQ aggregateBestSolution;
     private static ArrayList<LSQ> solutionHistory;
@@ -35,8 +38,8 @@ public class Statistics
     //##########graph data#############################
     //series data stored here for comparison on graph
     //graph results can be saved to either A or B and compared
-    private static XYChart.Series<Integer, Double> seriesA;
-    private static XYChart.Series<Integer, Double> seriesB;
+    private static XYChart.Series<Integer, Integer> seriesA;
+    private static XYChart.Series<Integer, Integer> seriesB;
     //####################################################
 
     //sets default values for all statistics; should be called on startup or when GA settings change
@@ -50,6 +53,9 @@ public class Statistics
         minFitness = Double.POSITIVE_INFINITY;
         maxFitness = 0.0;
         avgFitness = 0.0;
+        maxConflicts = 0;
+        minConflicts = 0;
+        avgConflicts = 0;
         stdDev = 0.0;
         currentSolution = null;
         currentGenerations = 0;
@@ -185,36 +191,36 @@ public class Statistics
             solutionProgression.add(solutionEntry);
     }
 
-    public static XYChart.Series<Integer, Double> getSeriesA()
+    public static XYChart.Series<Integer, Integer> getSeriesA()
     {
         return seriesA;
     }
 
-    public static void setSeriesA(XYChart.Series<Integer, Double> series)
+    public static void setSeriesA(XYChart.Series<Integer, Integer> series)
     {
         Statistics.seriesA = new XYChart.Series<>();
         Statistics.seriesA.setName(series.getName());
-        for(XYChart.Data<Integer, Double> data: series.getData())
+        for(XYChart.Data<Integer, Integer> data: series.getData())
         {
-            XYChart.Data<Integer, Double> d = new XYChart.Data<>();
+            XYChart.Data<Integer, Integer> d = new XYChart.Data<>();
             d.setXValue(data.getXValue());
             d.setYValue(data.getYValue());
             Statistics.seriesA.getData().add(d);
         }
     }
 
-    public static XYChart.Series<Integer, Double> getSeriesB()
+    public static XYChart.Series<Integer, Integer> getSeriesB()
     {
         return seriesB;
     }
 
-    public static void setSeriesB(XYChart.Series<Integer, Double> series)
+    public static void setSeriesB(XYChart.Series<Integer, Integer> series)
     {
         Statistics.seriesB = new XYChart.Series<>();
         Statistics.seriesB.setName(series.getName());
-        for(XYChart.Data<Integer, Double> data: series.getData())
+        for(XYChart.Data<Integer, Integer> data: series.getData())
         {
-            XYChart.Data<Integer, Double> d = new XYChart.Data<>();
+            XYChart.Data<Integer, Integer> d = new XYChart.Data<>();
             d.setXValue(data.getXValue());
             d.setYValue(data.getYValue());
             Statistics.seriesB.getData().add(d);
@@ -244,14 +250,21 @@ public class Statistics
             Statistics.minGenerations = numGenerations;
         if(numGenerations > maxGenerations)
             Statistics.maxGenerations = numGenerations;
+        if(solution.getNumConflicts() < minConflicts || minConflicts == 0)
+            Statistics.minConflicts = solution.getNumConflicts();
+        if(solution.getNumConflicts() > maxConflicts)
+            Statistics.maxConflicts = solution.getNumConflicts();
         //update averages
         double totalFitness = 0.0;
+        double totalConflicts = 0.0;
         for(LSQ lsq: solutionHistory)
         {
             totalFitness += lsq.getFitness();
+            totalConflicts += lsq.getNumConflicts();
         }
         Statistics.avgFitness = totalFitness / (double) Statistics.solutionHistory.size();
         Statistics.avgGenerations = (int) ((double) totalGenerations / (double) Statistics.solutionHistory.size());
+        Statistics.avgConflicts = (int) (totalConflicts / (double) Statistics.solutionHistory.size());
 
         //calculate standard deviation
         double totalDeviation = 0.0;
@@ -266,10 +279,14 @@ public class Statistics
     {
         DecimalFormat df = new DecimalFormat("0.##");
         return "CURRENT SOLUTION: "
+                + "\n\tTotal Number of Conflicts: " + currentSolution.getNumConflicts()
                 + "\n\tFitness: " + df.format(currentSolution.getFitness())
                 + "\n\tNumber of Generations: " + currentGenerations
                 + "\n\nAGGREGATE DATA:"
                 + "\n\tIterations: " + iterations
+                + "\n\tMinimum Number of Conflicts: " + minConflicts
+                + "\n\tMaximum Number of Conflicts: " + maxConflicts
+                + "\n\tAverage Number of Conflicts: " + avgConflicts
                 + "\n\tMinimum Fitness " + df.format(minFitness)
                 + "\n\tMaximum Fitness " + df.format(maxFitness)
                 + "\n\tAverage Fitness " + df.format(avgFitness)
