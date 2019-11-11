@@ -181,17 +181,19 @@ public class GA
     //, try to fill empty cells with opposite parent
 private static ArrayList<LSQ> crossoverRandomColumns(LSQ parent1, LSQ parent2)
     {
-        if(!parent1.validateTable())
-            System.out.println("Invalid parent for crossover");
         Random rand = new Random();
         int dim = parent1.getDimension();
+        //determine number of columns randomly
         int numCols = rand.nextInt(dim);
+        //create children and empty their tables
         LSQ child1 = new LSQ(parent1);
         LSQ child2 = new LSQ(parent1);
         child1.emptyTable();
         child2.emptyTable();
+        //get available characters for each child
         ArrayList<Character> charPool1 = child1.getCharacterPool();
         ArrayList<Character> charPool2 = child2.getCharacterPool();
+        //list to keep track of which columns have/have not been selected
         ArrayList<Integer> remainingCols = new ArrayList<>();
         for(int x = 0; x < dim; x++)
         {

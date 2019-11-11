@@ -62,7 +62,6 @@ public class WOC
 
         //increment count of each cell of each solution
         ArrayList<LSQ> bestSolutionsCopy = new ArrayList<>(bestSolutions);
-
         while(!bestSolutionsCopy.isEmpty())
         {
             LSQ lsq = bestSolutionsCopy.remove(0);

@@ -106,6 +106,7 @@ public class LSQ implements Comparable<LSQ>
             {
                 if(lsqTable[i][j] == null)
                 {
+                    //select a random character from the available pool of characters
                     Collections.shuffle(charPool);
                     char c = charPool.remove(0);
                     lsqTable[i][j] = new Symbol(c, false);
@@ -218,32 +219,11 @@ public class LSQ implements Comparable<LSQ>
         }
     }
 
-    //get a pool of counts of remaining available characters to fill an incomplete solution
+    //get a pool remaining available characters to fill an incomplete solution
     public ArrayList<Character> getCharacterPool()
     {
-        //fill up character pool based on start char
-        /*HashMap<Character, Integer> characterPool = new HashMap<>();
-        char c = startChar;
-        for(int x = 0; x < dimension; x++)
-        {
-            characterPool.put(c, dimension);
-            c++;
-        }
-
-        //subtract existing symbols from character pool
-        for(int i = 0; i < dimension; i++)
-        {
-            for(int j = 0; j < dimension; j++)
-            {
-                if(lsqTable[i][j] != null)
-                {
-                    Character character = lsqTable[i][j].getCharacter();
-
-                    //if(characterPool.get(character) >= 1)
-                        characterPool.put(character, characterPool.get(character) - 1);
-                }
-            }
-        }*/
+        //using startChar, create list of all available characters
+        //ex: a 3x3 that starts with A would have A,A,A,B,B,B,C,C,C
         ArrayList<Character> characterPool = new ArrayList<>();
         char c = startChar;
         for(int i = 0; i < dimension; i++)
@@ -255,21 +235,21 @@ public class LSQ implements Comparable<LSQ>
             c++;
         }
 
+        //find already filled cells and remove their characters from the pool
         for(int i = 0; i < dimension; i++)
         {
             for(int j = 0; j < dimension; j++)
             {
                 if(lsqTable[i][j] != null)
                 {
-                    characterPool.remove((Character) lsqTable[i][j].getCharacter());
+                    characterPool.remove( lsqTable[i][j].getCharacter());
                 }
             }
         }
-
         return characterPool;
     }
 
-
+    //check if table has no more n of each character, where n is dimension
     public boolean validateTable()
     {
         ArrayList<Character> characterPool = getCharacterPool();
@@ -283,6 +263,7 @@ public class LSQ implements Comparable<LSQ>
                 + "\nStart Char: " + startChar
                 + "\nLowest Column: " + lowestColumn
                 + "\nLowest Row: " + lowestRow
+                + "\nNumber of Conflicts: " + numConflicts
                 + "\nFitness: " + fitness);
 
         for(int j = 0; j < dimension; j++)
@@ -297,6 +278,7 @@ public class LSQ implements Comparable<LSQ>
         return str.toString();
     }
 
+    //inverse comparison: sorting results in highest fitness first
     @Override
     public int compareTo(LSQ o) {
         return Double.compare(o.getFitness(), this.fitness);

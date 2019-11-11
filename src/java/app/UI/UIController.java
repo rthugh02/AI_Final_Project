@@ -85,7 +85,6 @@ public class UIController
                 lblIterations.setText(Integer.toString(Statistics.getIterations()));
                 txtStatistics.setText(Statistics.statsAsString());
             }
-            System.out.println("finished GA");
             drawGAProgression();
          }
     }
