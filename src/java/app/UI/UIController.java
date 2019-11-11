@@ -163,7 +163,6 @@ public class UIController
             if(!Statistics.getSolutionProgression().get(i-1).equals(Statistics.getSolutionProgression().get(i)))
             {
                 ftGrid = drawGrid(Statistics.getSolutionProgression().get(i));
-                System.out.println(Statistics.getSolutionProgression().get(i).toString());
                 //set up instant fade in transition and add to sequential transition
                 ft = new FadeTransition(Duration.millis(.1), ftGrid);
                 ft.setFromValue(0.0);

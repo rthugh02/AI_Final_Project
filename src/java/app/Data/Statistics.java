@@ -20,12 +20,11 @@ public class Statistics
     private static double avgFitness;
     private static double stdDev;
     private static LSQ aggregateBestSolution;
+    private static ArrayList<LSQ> solutionHistory;
     //########################################################################
 
     //##########data for the current run##############
     private static LSQ currentSolution;
-
-
     //stores best solution from each generation for one iteration; used to visualize progression on UI
     private static ArrayList<LSQ> solutionProgression;
     //################################################
@@ -51,6 +50,12 @@ public class Statistics
         stdDev = 0.0;
         currentSolution = null;
         aggregateBestSolution = null;
+        solutionProgression = new ArrayList<>();
+        solutionHistory = new ArrayList<>();
+    }
+
+    public static void resetProgression()
+    {
         solutionProgression = new ArrayList<>();
     }
 
@@ -216,7 +221,7 @@ public class Statistics
     {
         Statistics.iterations++;
         Statistics.currentSolution = new LSQ(solution);
-        Statistics.addSolutionToProgression(solution);
+        Statistics.solutionHistory.add(solution);
         if(Double.compare(solution.getFitness(), 2.0) == 0)
             Statistics.timesSolutionFound++;
 
@@ -235,7 +240,7 @@ public class Statistics
         //update averages
         int totalFitness = 0;
         int totalGenerations = 0;
-        for(LSQ lsq: solutionProgression)
+        for(LSQ lsq: solutionHistory)
         {
             totalFitness += lsq.getFitness();
             totalGenerations += numGenerations;
@@ -245,12 +250,11 @@ public class Statistics
 
         //calculate standard deviation
         double totalDeviation = 0.0;
-        for(LSQ lsq: solutionProgression)
+        for(LSQ lsq: solutionHistory)
         {
             totalDeviation += Math.sqrt(lsq.getFitness() - avgFitness);
         }
         stdDev = Math.sqrt(totalDeviation / (double) iterations);
-
     }
 
 }

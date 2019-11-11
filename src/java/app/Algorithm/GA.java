@@ -36,10 +36,13 @@ public class GA
 
             //TODO make sure to call Statistics.updateAggregateData() at end of GA calculation
         */
-        workingPopulation = population; 
+        Statistics.resetProgression();
+        workingPopulation = population;
+        noFitnessChanges = 0;
         int numGenerations = 0; 
         bestSolution = population.getPopulationMembersSorted().get(0);
-        while(noFitnessChanges != 1000 && bestSolution.getFitness() != 2)
+        System.out.println("Begin GA");
+        while(noFitnessChanges != 100 && bestSolution.getFitness() != 2)
         {
             //1. apply mutation operator to population
             Random rand = new Random();
@@ -115,8 +118,12 @@ public class GA
               }
             else if(Double.compare(topMember.getFitness(), bestSolution.getFitness() ) == 0)
               noFitnessChanges++;
-            Statistics.updateAggregateData(topMember, numGenerations);
+
+
+            Statistics.addSolutionToProgression(topMember);
         }
+        Statistics.updateAggregateData(bestSolution, numGenerations);
+        System.out.println("End GA");
         return workingPopulation;
     }
 
@@ -216,6 +223,7 @@ public class GA
     
     private static LSQ mutation(LSQ original)
     {
+        System.out.println("Begin Mutation");
     	LSQ mutated = new LSQ(original);
     	int max = original.getDimension();		//uses the dimension to get the range for the random array slot
     	boolean symb1clear = false;		//booleans to make sure that both symbols are not locked
@@ -248,7 +256,8 @@ public class GA
     		
     		//next replaces the second symbol with the first symbol
     		mutated.setSymbol(new Symbol(original.getSymbol(symb1col, symb2row)), symb2col, symb2row);
-   
+
+        System.out.println("End Mutation");
    		return mutated;
     }
 }
